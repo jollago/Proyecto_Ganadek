@@ -1,0 +1,602 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Usuarios - Ganadek{% endblock %}
+
+{% block breadcrumb %}
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li><a href="/dashboard" class="text-gray-500 hover:text-gray-700">Dashboard</a></li>
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="text-emerald-600 font-medium">Gestión de Usuarios</li>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50 p-6">
+    <!-- Header de la página -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-3 rounded-xl shadow-lg">
+                    <i class="fas fa-users text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Gestión de Usuarios</h1>
+                    <p class="text-gray-600 mt-1">Administra los usuarios del sistema Ganadek</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="exportUsers()" class="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 shadow-sm hover:shadow-md transition-all duration-200 flex items-center">
+                    <i class="fas fa-download mr-2"></i>
+                    Exportar
+                </button>
+                <button onclick="openCreateModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nuevo Usuario
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <!-- Barra de búsqueda -->
+            <div class="relative flex-1 max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" id="searchInput" placeholder="Buscar usuarios..." 
+                       class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                       onkeyup="filterUsers()">
+            </div>
+
+            <!-- Filtros -->
+            <div class="flex space-x-4">
+                <select id="roleFilter" onchange="filterUsers()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                    <option value="">Todos los roles</option>
+                    <option value="admin">Administrador</option>
+                    <option value="manager">Gerente</option>
+                    <option value="user">Usuario</option>
+                </select>
+                <select id="statusFilter" onchange="filterUsers()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                    <option value="">Todos los estados</option>
+                    <option value="active">Activo</option>
+                    <option value="inactive">Inactivo</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 font-medium">Total Usuarios</p>
+                    <p class="text-2xl font-bold text-gray-900" id="totalUsers">0</p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-full">
+                    <i class="fas fa-users text-blue-600"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 font-medium">Activos</p>
+                    <p class="text-2xl font-bold text-green-600" id="activeUsers">0</p>
+                </div>
+                <div class="bg-green-100 p-3 rounded-full">
+                    <i class="fas fa-user-check text-green-600"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 font-medium">Inactivos</p>
+                    <p class="text-2xl font-bold text-red-600" id="inactiveUsers">0</p>
+                </div>
+                <div class="bg-red-100 p-3 rounded-full">
+                    <i class="fas fa-user-times text-red-600"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 font-medium">Administradores</p>
+                    <p class="text-2xl font-bold text-purple-600" id="adminUsers">0</p>
+                </div>
+                <div class="bg-purple-100 p-3 rounded-full">
+                    <i class="fas fa-user-shield text-purple-600"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Lista de Usuarios</h2>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Último acceso</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable" class="bg-white divide-y divide-gray-200">
+                    <!-- Los usuarios se cargarán aquí dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-700">
+                    Mostrando <span id="showingStart">1</span> a <span id="showingEnd">10</span> de <span id="totalCount">0</span> usuarios
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="previousPage()" class="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button onclick="nextPage()" class="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para crear/editar usuario -->
+<div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-white" id="modalTitle">Nuevo Usuario</h3>
+                    <button onclick="closeModal()" class="text-white hover:text-gray-200 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <form id="userForm" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user mr-1 text-emerald-600"></i>
+                            Nombre de Usuario
+                        </label>
+                        <input type="text" id="username" name="username" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                               placeholder="Nombre de usuario">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-envelope mr-1 text-emerald-600"></i>
+                            Correo Electrónico
+                        </label>
+                        <input type="email" id="email" name="email" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                               placeholder="correo@ejemplo.com">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user-tag mr-1 text-emerald-600"></i>
+                            Rol
+                        </label>
+                        <select id="role" name="role" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200">
+                            <option value="">Seleccionar rol</option>
+                            <option value="admin">Administrador</option>
+                            <option value="manager">Gerente</option>
+                            <option value="user">Usuario</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-toggle-on mr-1 text-emerald-600"></i>
+                            Estado
+                        </label>
+                        <select id="status" name="status" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200">
+                            <option value="active">Activo</option>
+                            <option value="inactive">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="passwordSection">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-lock mr-1 text-emerald-600"></i>
+                                Contraseña
+                            </label>
+                            <input type="password" id="password" name="password"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                   placeholder="Contraseña">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-lock mr-1 text-emerald-600"></i>
+                                Confirmar Contraseña
+                            </label>
+                            <input type="password" id="confirmPassword" name="confirmPassword"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                   placeholder="Confirmar contraseña">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal()" 
+                            class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105">
+                        <i class="fas fa-save mr-2"></i>
+                        Guardar Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Datos de ejemplo (en producción vendría de la base de datos)
+let users = [
+    { id: 1, username: 'admin', email: 'admin@ganadek.com', role: 'admin', status: 'active', lastAccess: '2024-07-03' },
+    { id: 2, username: 'jperez', email: 'juan.perez@ganadek.com', role: 'manager', status: 'active', lastAccess: '2024-07-02' },
+    { id: 3, username: 'mgomez', email: 'maria.gomez@ganadek.com', role: 'user', status: 'active', lastAccess: '2024-07-01' },
+    { id: 4, username: 'lrodriguez', email: 'luis.rodriguez@ganadek.com', role: 'user', status: 'inactive', lastAccess: '2024-06-28' },
+    { id: 5, username: 'amartinez', email: 'ana.martinez@ganadek.com', role: 'manager', status: 'active', lastAccess: '2024-07-03' }
+];
+
+let currentPage = 1;
+const usersPerPage = 10;
+let filteredUsers = [...users];
+let editingUserId = null;
+
+// Inicializar página
+document.addEventListener('DOMContentLoaded', function() {
+    loadUsers();
+    updateStats();
+    
+    // Configurar formulario
+    document.getElementById('userForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveUser();
+    });
+    
+    console.log('Gestión de usuarios de Ganadek cargada');
+});
+
+// Cargar usuarios en la tabla
+function loadUsers() {
+    const tableBody = document.getElementById('usersTable');
+    tableBody.innerHTML = '';
+    
+    const start = (currentPage - 1) * usersPerPage;
+    const end = start + usersPerPage;
+    const pageUsers = filteredUsers.slice(start, end);
+    
+    pageUsers.forEach(user => {
+        const row = createUserRow(user);
+        tableBody.appendChild(row);
+    });
+    
+    updatePagination();
+}
+
+// Crear fila de usuario
+function createUserRow(user) {
+    const row = document.createElement('tr');
+    row.className = 'hover:bg-gray-50 transition-colors';
+    row.innerHTML = `
+        <td class="px-6 py-4 whitespace-nowrap">
+            <input type="checkbox" class="user-checkbox rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" value="${user.id}">
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
+                        <span class="text-white font-medium text-sm">${user.username.charAt(0).toUpperCase()}</span>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">${user.username}</div>
+                    <div class="text-sm text-gray-500">ID: ${user.id}</div>
+                </div>
+            </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${user.email}</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeClass(user.role)}">
+                <i class="${getRoleIcon(user.role)} mr-1"></i>
+                ${getRoleLabel(user.role)}
+            </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(user.status)}">
+                <i class="${getStatusIcon(user.status)} mr-1"></i>
+                ${user.status === 'active' ? 'Activo' : 'Inactivo'}
+            </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            ${formatDate(user.lastAccess)}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex space-x-2">
+                <button onclick="editUser(${user.id})" class="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-50" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="toggleUserStatus(${user.id})" class="text-yellow-600 hover:text-yellow-800 transition-colors p-1 rounded hover:bg-yellow-50" title="Cambiar estado">
+                    <i class="fas fa-toggle-on"></i>
+                </button>
+                <button onclick="deleteUser(${user.id})" class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </td>
+    `;
+    return row;
+}
+
+// Funciones auxiliares para estilos
+function getRoleBadgeClass(role) {
+    const classes = {
+        'admin': 'bg-purple-100 text-purple-800',
+        'manager': 'bg-blue-100 text-blue-800',
+        'user': 'bg-green-100 text-green-800'
+    };
+    return classes[role] || 'bg-gray-100 text-gray-800';
+}
+
+function getRoleIcon(role) {
+    const icons = {
+        'admin': 'fas fa-user-shield',
+        'manager': 'fas fa-user-tie',
+        'user': 'fas fa-user'
+    };
+    return icons[role] || 'fas fa-user';
+}
+
+function getRoleLabel(role) {
+    const labels = {
+        'admin': 'Administrador',
+        'manager': 'Gerente',
+        'user': 'Usuario'
+    };
+    return labels[role] || 'Usuario';
+}
+
+function getStatusBadgeClass(status) {
+    return status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+}
+
+function getStatusIcon(status) {
+    return status === 'active' ? 'fas fa-circle' : 'fas fa-circle';
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    });
+}
+
+// Funciones de gestión de usuarios
+function openCreateModal() {
+    editingUserId = null;
+    document.getElementById('modalTitle').textContent = 'Nuevo Usuario';
+    document.getElementById('userForm').reset();
+    document.getElementById('passwordSection').style.display = 'block';
+    document.getElementById('password').required = true;
+    document.getElementById('confirmPassword').required = true;
+    showModal();
+}
+
+function editUser(id) {
+    const user = users.find(u => u.id === id);
+    if (!user) return;
+    
+    editingUserId = id;
+    document.getElementById('modalTitle').textContent = 'Editar Usuario';
+    document.getElementById('username').value = user.username;
+    document.getElementById('email').value = user.email;
+    document.getElementById('role').value = user.role;
+    document.getElementById('status').value = user.status;
+    document.getElementById('passwordSection').style.display = 'none';
+    document.getElementById('password').required = false;
+    document.getElementById('confirmPassword').required = false;
+    showModal();
+}
+
+function saveUser() {
+    const formData = new FormData(document.getElementById('userForm'));
+    const userData = {
+        username: formData.get('username'),
+        email: formData.get('email'),
+        role: formData.get('role'),
+        status: formData.get('status'),
+        password: formData.get('password'),
+        confirmPassword: formData.get('confirmPassword')
+    };
+    
+    // Validaciones
+    if (!userData.username || !userData.email || !userData.role || !userData.status) {
+        alert('Por favor, complete todos los campos obligatorios.');
+        return;
+    }
+    
+    if (editingUserId === null && userData.password !== userData.confirmPassword) {
+        alert('Las contraseñas no coinciden.');
+        return;
+    }
+    
+    if (editingUserId === null) {
+        // Crear nuevo usuario
+        const newUser = {
+            id: Math.max(...users.map(u => u.id)) + 1,
+            username: userData.username,
+            email: userData.email,
+            role: userData.role,
+            status: userData.status,
+            lastAccess: new Date().toISOString().split('T')[0]
+        };
+        users.push(newUser);
+    } else {
+        // Editar usuario existente
+        const userIndex = users.findIndex(u => u.id === editingUserId);
+        if (userIndex !== -1) {
+            users[userIndex] = {
+                ...users[userIndex],
+                username: userData.username,
+                email: userData.email,
+                role: userData.role,
+                status: userData.status
+            };
+        }
+    }
+    
+    filterUsers();
+    updateStats();
+    closeModal();
+    
+    // Mostrar notificación de éxito
+    showNotification('Usuario guardado correctamente', 'success');
+}
+
+function toggleUserStatus(id) {
+    const user = users.find(u => u.id === id);
+    if (user) {
+        user.status = user.status === 'active' ? 'inactive' : 'active';
+        filterUsers();
+        updateStats();
+        showNotification('Estado del usuario actualizado', 'success');
+    }
+}
+
+function deleteUser(id) {
+    if (confirm('¿Está seguro de que desea eliminar este usuario?')) {
+        users = users.filter(u => u.id !== id);
+        filterUsers();
+        updateStats();
+        showNotification('Usuario eliminado correctamente', 'success');
+    }
+}
+
+// Funciones de filtrado
+function filterUsers() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const roleFilter = document.getElementById('roleFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    
+    filteredUsers = users.filter(user => {
+        const matchesSearch = user.username.toLowerCase().includes(search) || 
+                             user.email.toLowerCase().includes(search);
+        const matchesRole = !roleFilter || user.role === roleFilter;
+        const matchesStatus = !statusFilter || user.status === statusFilter;
+        
+        return matchesSearch && matchesRole && matchesStatus;
+    });
+    
+    currentPage = 1;
+    loadUsers();
+}
+
+// Funciones de utilidad
+function showModal() {
+    const modal = document.getElementById('userModal');
+    const content = document.getElementById('modalContent');
+    
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeModal() {
+    const modal = document.getElementById('userModal');
+    const content = document.getElementById('modalContent');
+    
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
+
+function updateStats() {
+    document.getElementById('totalUsers').textContent = users.length;
+    document.getElementById('activeUsers').textContent = users.filter(u => u.status === 'active').length;
+    document.getElementById('inactiveUsers').textContent = users.filter(u => u.status === 'inactive').length;
+    document.getElementById('adminUsers').textContent = users.filter(u => u.role === 'admin').length;
+}
+
+function updatePagination() {
+    const start = (currentPage - 1) * usersPerPage + 1;
+    const end = Math.min(currentPage * usersPerPage, filteredUsers.length);
+    
+    document.getElementById('showingStart').textContent = start;
+    document.getElementById('showingEnd').textContent = end;
+    document.getElementById('totalCount').textContent = filteredUsers.length;
+}
+
+function nextPage() {
+    if (currentPage * usersPerPage < filteredUsers.length) {
+        currentPage++;
+        loadUsers();
+    }
+}
+
+function previousPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        loadUsers();
+    }
+}
+
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.user-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+}
+
+function exportUsers() {
+    // Implementar exportación a Excel/CSV
+    showNotification('Exportando usuarios...', 'info');
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full ${
+        type === 'success'

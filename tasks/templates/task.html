@@ -1,22 +1,22 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard - Ganadek{% endblock %}
+{% block title %}Panel Informativo - Ganadek{% endblock %}
 
 {% block breadcrumb %}
 <li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
-<li class="text-emerald-600 font-medium">Dashboard</li>
+<li class="text-emerald-600 font-medium">Panel Informativo</li>
 {% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50">
-    <!-- Header del Dashboard -->
+    <!-- Header del Panel Informativo -->
     <div class="bg-white shadow-sm border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-6">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">
                         <i class="fas fa-tachometer-alt text-emerald-600 mr-3"></i>
-                        Dashboard
+                        Panel Informativo
                     </h1>
                     <p class="text-gray-600 mt-1">Bienvenido, {{ usuario_nombre|default:"Usuario" }}</p>
                 </div>
@@ -104,7 +104,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-600 mb-1">Producción Mensual</p>
-                            <p class="text-3xl font-bold text-gray-900"> {{ produccion_total|floatformat:2|default:"0" }} L</p>
+                            <p class="text-3xl font-bold text-gray-900"> {{ produccion_total|floatformat:0|default:"0" }} L</p>
                             <div class="flex items-center mt-2">
                                 <i class="fas fa-arrow-down text-red-500 text-xs mr-1"></i>
                                 <span class="text-red-500 text-sm font-medium">1.2%</span>
@@ -168,16 +168,6 @@
                             <p class="text-emerald-100 text-sm">Gestionar fincas</p>
                         </div>
                         <i class="fas fa-map-marker-alt text-2xl text-emerald-200"></i>
-                    </div>
-                </a>
-
-                <a href="{% url 'prueba' %}" class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="font-semibold text-lg">Potreros</h3>
-                            <p class="text-blue-100 text-sm">Gestionar potreros</p>
-                        </div>
-                        <i class="fas fa-seedling text-2xl text-blue-200"></i>
                     </div>
                 </a>
 
@@ -330,7 +320,7 @@
         // Iniciar animación de contadores después de un breve retraso
         setTimeout(animateCounters, 1000);
 
-        console.log('Dashboard de Ganadek cargado exitosamente');
+        console.log('Panel Informativo de Ganadek cargado exitosamente');
     });
 </script>
 {% endblock %}
