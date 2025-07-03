@@ -1,0 +1,33 @@
+# Django core
+Django>=4.2,<5.0
+
+# Conexión con MySQL
+mysqlclient>=2.2.0
+
+# Manejo de archivos e imágenes
+Pillow>=10.0.0
+
+# Tailwind CSS en Django
+django-tailwind>=3.6.0
+django-browser-reload>=1.12.0
+
+# Variables de entorno
+python-decouple>=3.8
+
+# Validación de formularios, fechas, etc.
+django-widget-tweaks>=1.5.0
+
+# Para subir múltiples imágenes
+django-cleanup>=8.0.0
+
+# Soporte para zonas horarias y fechas
+pytz>=2024.1
+
+# Seguridad y utilidades
+django-extensions>=3.2.3
+
+# Opción para paginación o filtros (si usas)
+django-filter>=23.5
+
+# Herramientas de desarrollo (opcional)
+ipython>=8.24.0

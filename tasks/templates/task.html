@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Ganadek{% endblock %}
+
+{% block breadcrumb %}
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="text-emerald-600 font-medium">Dashboard</li>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50">
+    <!-- Header del Dashboard -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">
+                        <i class="fas fa-tachometer-alt text-emerald-600 mr-3"></i>
+                        Dashboard
+                    </h1>
+                    <p class="text-gray-600 mt-1">Bienvenido, {{ usuario_nombre|default:"Usuario" }}</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center bg-emerald-50 px-4 py-2 rounded-lg">
+                        <i class="fas fa-calendar-alt text-emerald-600 mr-2"></i>
+                        <span class="text-sm font-medium text-emerald-700" id="current-date"></span>
+                    </div>
+                    <div class="flex items-center bg-blue-50 px-4 py-2 rounded-lg">
+                        <i class="fas fa-clock text-blue-600 mr-2"></i>
+                        <span class="text-sm font-medium text-blue-700" id="current-time"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Alertas Importantes -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                Alertas Importantes
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl p-4 text-white shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="font-semibold text-lg mb-1">Vacunación Pendiente</h3>
+                            <p class="text-yellow-100 text-sm">Animal #245 requiere vacuna contra la fiebre aftosa</p>
+                        </div>
+                        <div class="bg-white/20 rounded-full p-2">
+                            <i class="fas fa-syringe text-white"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span class="bg-white/20 text-xs font-medium px-2 py-1 rounded-full">Urgente</span>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-red-400 to-red-500 rounded-xl p-4 text-white shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="font-semibold text-lg mb-1">Inventario Bajo</h3>
+                            <p class="text-red-100 text-sm">El inventario de alimento está por debajo del mínimo</p>
+                        </div>
+                        <div class="bg-white/20 rounded-full p-2">
+                            <i class="fas fa-warehouse text-white"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span class="bg-white/20 text-xs font-medium px-2 py-1 rounded-full">Crítico</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjetas de Estadísticas -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-chart-line text-emerald-600 mr-2"></i>
+                Resumen General
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Total Animales -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 mb-1">Total Animales</p>
+                            <p class="text-3xl font-bold text-gray-900">{{ total_animales|default:"0" }}</p>
+                            <div class="flex items-center mt-2">
+                                <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
+                                <span class="text-green-500 text-sm font-medium">2.5%</span>
+                                <span class="text-gray-500 text-xs ml-1">vs mes anterior</span>
+                            </div>
+                        </div>
+                        <div class="bg-emerald-100 rounded-full p-3">
+                            <i class="fas fa-cow text-emerald-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Producción Mensual -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 mb-1">Producción Mensual</p>
+                            <p class="text-3xl font-bold text-gray-900"> {{ produccion_total|floatformat:2|default:"0" }} L</p>
+                            <div class="flex items-center mt-2">
+                                <i class="fas fa-arrow-down text-red-500 text-xs mr-1"></i>
+                                <span class="text-red-500 text-sm font-medium">1.2%</span>
+                                <span class="text-gray-500 text-xs ml-1">vs mes anterior</span>
+                            </div>
+                        </div>
+                        <div class="bg-blue-100 rounded-full p-3">
+                            <i class="fas fa-tint text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nacimientos del Mes -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 mb-1">Nacimientos Mes</p>
+                            <p class="text-3xl font-bold text-gray-900">{{ nacimientos_mes|default:"0" }}</p>
+                            <div class="flex items-center mt-2">
+                                <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
+                                <span class="text-green-500 text-sm font-medium">+4</span>
+                                <span class="text-gray-500 text-xs ml-1">vs mes anterior</span>
+                            </div>
+                        </div>
+                        <div class="bg-pink-100 rounded-full p-3">
+                            <i class="fas fa-baby text-pink-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empleados Activos -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 mb-1">Empleados Activos</p>
+                            <p class="text-3xl font-bold text-gray-900">{{ empleados_activos|default:"0" }}</p>
+                            <div class="flex items-center mt-2">
+                                <i class="fas fa-minus text-gray-400 text-xs mr-1"></i>
+                                <span class="text-gray-500 text-sm font-medium">Sin cambios</span>
+                            </div>
+                        </div>
+                        <div class="bg-purple-100 rounded-full p-3">
+                            <i class="fas fa-users text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación Rápida -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-rocket text-emerald-600 mr-2"></i>
+                Acceso Rápido
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <a href="{% url 'listar_fincas' %}" class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-lg">Fincas</h3>
+                            <p class="text-emerald-100 text-sm">Gestionar fincas</p>
+                        </div>
+                        <i class="fas fa-map-marker-alt text-2xl text-emerald-200"></i>
+                    </div>
+                </a>
+
+                <a href="{% url 'prueba' %}" class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-lg">Potreros</h3>
+                            <p class="text-blue-100 text-sm">Gestionar potreros</p>
+                        </div>
+                        <i class="fas fa-seedling text-2xl text-blue-200"></i>
+                    </div>
+                </a>
+
+                <a href="#" class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-lg">Animales</h3>
+                            <p class="text-purple-100 text-sm">Gestionar animales</p>
+                        </div>
+                        <i class="fas fa-paw text-2xl text-purple-200"></i>
+                    </div>
+                </a>
+
+                <a href="#" class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-lg">Reportes</h3>
+                            <p class="text-orange-100 text-sm">Ver reportes</p>
+                        </div>
+                        <i class="fas fa-chart-bar text-2xl text-orange-200"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Actividades Recientes -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">
+                    <i class="fas fa-history text-emerald-600 mr-2"></i>
+                    Actividades Recientes
+                </h2>
+                <a href="#" class="text-emerald-600 hover:text-emerald-700 text-sm font-medium">Ver todas</a>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="bg-emerald-100 rounded-full p-2 flex-shrink-0">
+                        <i class="fas fa-plus text-emerald-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-900">
+                            <span class="font-semibold text-emerald-600">José Pérez</span> registró un nuevo animal
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">Hace 2 horas</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="bg-blue-100 rounded-full p-2 flex-shrink-0">
+                        <i class="fas fa-edit text-blue-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-900">
+                            <span class="font-semibold text-blue-600">María González</span> actualizó el registro de producción
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">Hace 4 horas</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="bg-purple-100 rounded-full p-2 flex-shrink-0">
+                        <i class="fas fa-calendar-check text-purple-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-900">
+                            <span class="font-semibold text-purple-600">Sistema</span> programó recordatorio de vacunación
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">Hace 1 día</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Actualizar fecha y hora
+        function updateDateTime() {
+            const now = new Date();
+            const dateElement = document.getElementById('current-date');
+            const timeElement = document.getElementById('current-time');
+            
+            if (dateElement) {
+                dateElement.textContent = now.toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+            
+            if (timeElement) {
+                timeElement.textContent = now.toLocaleTimeString('es-ES');
+            }
+        }
+        
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Animaciones de entrada
+        const cards = document.querySelectorAll('.bg-white, .bg-gradient-to-r');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Efectos de hover mejorados
+        const hoverCards = document.querySelectorAll('.hover\\:scale-105');
+        hoverCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05) translateY(-2px)';
+                this.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) translateY(0)';
+                this.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+            });
+        });
+
+        // Contador animado para estadísticas
+        const animateCounters = () => {
+            const counters = document.querySelectorAll('.text-3xl.font-bold');
+            counters.forEach(counter => {
+                const target = parseInt(counter.textContent.replace(/[^0-9]/g, ''));
+                if (target && target > 0) {
+                    let current = 0;
+                    const increment = target / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            counter.textContent = counter.textContent.replace(/[0-9]+/, target);
+                            clearInterval(timer);
+                        } else {
+                            counter.textContent = counter.textContent.replace(/[0-9]+/, Math.floor(current));
+                        }
+                    }, 30);
+                }
+            });
+        };
+
+        // Iniciar animación de contadores después de un breve retraso
+        setTimeout(animateCounters, 1000);
+
+        console.log('Dashboard de Ganadek cargado exitosamente');
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,308 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema Ganadero{% endblock %}</title>
+  <!-- Font Awesome -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"> -->
+
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}"> 
+
+    <!-- CSS compilado desde tu carpeta static -->
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}"> 
+
+    <!-- Tailwind CDN para desarrollo -->
+    <!--  <script src="https://cdn.tailwindcss.com"></script> --> 
+
+    <!-- Configuración personalizada de Tailwind -->
+  
+
+  
+</head>
+
+<body class="bg-gradient-to-br from-green-50 to-amber-50 min-h-screen">
+    <!-- Header completamente responsive -->
+    <header class="bg-gradient-to-r from-green-700 via-green-600 to-emerald-600 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-3 sm:px-4 lg:px-6">
+            <!-- Logo y título con mejor responsive -->
+            <div class="flex items-center justify-between py-3 sm:py-4">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <div class="bg-white p-1.5 sm:p-2 rounded-full shadow-md flex-shrink-0">
+                        <img src="{% static 'img/ganadek.png' %}" alt="Ganadek Logo"
+                            class="w-8 h-8 sm:w-10 sm:h-10 object-contain">
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="text-white text-lg sm:text-xl lg:text-2xl font-bold truncate">Ganadek</h1>
+                        <p class="text-green-100 text-xs sm:text-sm hidden xs:block">Sistema de Gestión Ganadera</p>
+                    </div>
+                </div>
+
+                <!-- Botón hamburguesa para móvil -->
+                <button id="mobile-menu-button"
+                    class="md:hidden text-white p-2 rounded-lg hover:bg-white/20 transition-colors">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+
+                <!-- Usuario info (desktop) -->
+                {% if user.is_authenticated %}
+                <div class="hidden md:flex items-center space-x-3 text-white">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-green-600 text-sm"></i>
+                        </div>
+                        <span class="font-medium text-sm lg:text-base truncate max-w-32">{{ user.username }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Navegación desktop -->
+            <nav class="pb-3 sm:pb-4 hidden md:block">
+                <ul class="flex flex-wrap space-x-1 lg:space-x-2">
+                    <li>
+                        <a href="/"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all duration-200 backdrop-blur-sm text-sm lg:text-base">
+                            <i class="fas fa-home"></i>
+                            <span>Inicio</span>
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a href="/task"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg hover:bg-white/20 text-white transition-all duration-200 text-sm lg:text-base">
+                            <i class="fas fa-tasks"></i>
+                            <span>Tareas</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg hover:bg-white/20 text-white transition-all duration-200 text-sm lg:text-base">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Reportes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg hover:bg-white/20 text-white transition-all duration-200 text-sm lg:text-base">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Inventario</span>
+                        </a>
+                    </li>
+                    <li class="ml-auto">
+                        <a href="/logout"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-all duration-200 text-sm lg:text-base">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Cerrar Sesión</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="ml-auto flex space-x-2">
+                        <a href="/signup"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-all duration-200 text-sm lg:text-base">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Registrarse</span>
+                        </a>
+                        <a href="/signin"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 text-sm lg:text-base">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Iniciar Sesión</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+            <!-- Menú móvil (inicialmente oculto) -->
+            <nav id="mobile-menu" class="md:hidden pb-4 hidden">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 space-y-2">
+                    <!-- Info del usuario en móvil -->
+                    {% if user.is_authenticated %}
+                    <div class="flex items-center space-x-3 text-white pb-3 border-b border-white/20">
+                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-green-600"></i>
+                        </div>
+                        <span class="font-medium">{{ user.username }}</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Enlaces de navegación móvil -->
+                    <a href="/"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-white/20 text-white transition-colors">
+                        <i class="fas fa-home w-5"></i>
+                        <span>Inicio</span>
+                    </a>
+
+                    {% if user.is_authenticated %}
+                    <a href="/task"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-white/20 text-white transition-colors">
+                        <i class="fas fa-tasks w-5"></i>
+                        <span>Tareas</span>
+                    </a>
+                    <a href="#"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-white/20 text-white transition-colors">
+                        <i class="fas fa-chart-line w-5"></i>
+                        <span>Reportes</span>
+                    </a>
+                    <a href="#"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-white/20 text-white transition-colors">
+                        <i class="fas fa-clipboard-list w-5"></i>
+                        <span>Inventario</span>
+                    </a>
+                    <a href="/logout"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors">
+                        <i class="fas fa-sign-out-alt w-5"></i>
+                        <span>Cerrar Sesión</span>
+                    </a>
+                    {% else %}
+                    <a href="/signup"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors">
+                        <i class="fas fa-user-plus w-5"></i>
+                        <span>Registrarse</span>
+                    </a>
+                    <a href="/signin"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors">
+                        <i class="fas fa-sign-in-alt w-5"></i>
+                        <span>Iniciar Sesión</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido principal completamente responsive -->
+    <main class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <!-- Breadcrumb responsive -->
+        <nav class="mb-4 sm:mb-6" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-gray-600 overflow-x-auto">
+                <li class="flex-shrink-0">
+                    <a href="/" class="hover:text-green-600 transition-colors">Inicio</a>
+                </li>
+                {% block breadcrumb %}{% endblock %}
+            </ol>
+        </nav>
+
+
+        <!-- Área de contenido responsive -->
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 lg:p-8">
+            {% block content %}
+            <!-- Contenido por defecto completamente responsive -->
+            <div class="text-center py-8 sm:py-12">
+                <div class="mb-4 sm:mb-6">
+                    <i class="fas fa-cow text-4xl sm:text-5xl lg:text-6xl text-green-600 mb-2 sm:mb-4"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-3 sm:mb-4 px-4">
+                    Bienvenido a Ganadek
+                </h2>
+                <p class="text-gray-600 text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 px-4 max-w-2xl mx-auto">
+                    Sistema integral para la gestión de tu ganadería
+                </p>
+
+                {% if not user.is_authenticated %}
+                <div class="flex flex-col xs:flex-row justify-center space-y-3 xs:space-y-0 xs:space-x-4 px-4">
+                    <a href="/signup"
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors text-center">
+                        Comenzar Ahora
+                    </a>
+                    <a href="/signin"
+                        class="border border-green-600 text-green-600 hover:bg-green-50 px-6 py-3 rounded-lg font-medium transition-colors text-center">
+                        Iniciar Sesión
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer completamente responsive -->
+    <footer class="bg-gray-800 text-white mt-8 sm:mt-12 lg:mt-16">
+        <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="bg-green-600 p-2 rounded-full flex-shrink-0">
+                            <i class="fas fa-cow text-white"></i>
+                        </div>
+                        <h3 class="text-lg sm:text-xl font-bold">Ganadek</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm sm:text-base">
+                        Solución completa para la gestión moderna de tu ganadería.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Enlaces Rápidos</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm sm:text-base">
+                        <li><a href="#" class="hover:text-white transition-colors">Soporte</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Documentación</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contacto</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Contacto</h4>
+                    <div class="space-y-2 text-gray-400 text-sm sm:text-base">
+                        <p class="flex items-start space-x-2">
+                            <i class="fas fa-envelope mt-1 flex-shrink-0"></i>
+                            <span class="break-all">info@ganadek.com</span>
+                        </p>
+                        <p class="flex items-center space-x-2">
+                            <i class="fas fa-phone flex-shrink-0"></i>
+                            <span>+57 311 216 0323</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="border-t border-gray-700 mt-6 sm:mt-8 pt-4 sm:pt-6 text-center text-gray-400 text-xs sm:text-sm">
+                <p>&copy; 2025 Ganadek. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript para funcionalidad móvil -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Funcionalidad del menú móvil
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = mobileMenuButton.querySelector('i');
+
+            mobileMenuButton.addEventListener('click', function () {
+                mobileMenu.classList.toggle('hidden');
+
+                // Cambiar icono
+                if (mobileMenu.classList.contains('hidden')) {
+                    menuIcon.className = 'fas fa-bars text-xl';
+                } else {
+                    menuIcon.className = 'fas fa-times text-xl';
+                }
+            });
+
+            // Cerrar menú móvil al hacer clic en un enlace
+            const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    mobileMenu.classList.add('hidden');
+                    menuIcon.className = 'fas fa-bars text-xl';
+                });
+            });
+
+            // Cerrar menú móvil al cambiar el tamaño de pantalla
+            window.addEventListener('resize', function () {
+                if (window.innerWidth >= 768) { // md breakpoint
+                    mobileMenu.classList.add('hidden');
+                    menuIcon.className = 'fas fa-bars text-xl';
+                }
+            });
+
+            console.log('Ganadek cargado correctamente - Versión Responsive');
+        });
+    </script>
+</body>
+
+</html>

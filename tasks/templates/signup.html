@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro - Ganadek{% endblock %}
+
+{% block breadcrumb %}
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="text-emerald-600 font-medium">Registro</li>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Contenedor principal con glassmorphism -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <!-- Header del formulario -->
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6 text-center">
+                <div class="bg-white/20 backdrop-blur-sm w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fas fa-user-plus text-white text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white mb-2">Crear Cuenta</h1>
+                <p class="text-emerald-100">Únete a Ganadek y gestiona tu ganadería</p>
+            </div>
+
+            <!-- Contenido del formulario -->
+            <div class="p-8">
+                <!-- Mostrar errores si existen -->
+                {% if error %}
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4 mb-6 animate-pulse">
+                    <div class="flex items-center">
+                        <div class="bg-red-100 rounded-full p-2 mr-3">
+                            <i class="fas fa-exclamation-triangle text-red-500 text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="text-red-700 font-semibold text-sm">Error de validación</span>
+                            <p class="text-red-600 text-sm mt-1">{{ error }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Formulario de registro -->
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Campo Username -->
+                    <div class="group">
+                        <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 transition-colors group-focus-within:text-emerald-600">
+                            <i class="fas fa-user mr-2 text-emerald-500"></i>
+                            Nombre de Usuario
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400 group-focus-within:text-emerald-500 transition-colors"></i>
+                            </div>
+                            <input type="text" 
+                                   name="{{ form.username.name }}" 
+                                   id="{{ form.username.id_for_label }}"
+                                   class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:shadow-md"
+                                   placeholder="Tu nombre de usuario"
+                                   {% if form.username.value %}value="{{ form.username.value }}"{% endif %}
+                                   required>
+                        </div>
+                        {% if form.username.errors %}
+                            <div class="mt-2 space-y-1">
+                                {% for error in form.username.errors %}
+                                    <div class="flex items-center text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">
+                                        <i class="fas fa-exclamation-circle mr-2 text-xs"></i>
+                                        <span>{{ error }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if form.username.help_text %}
+                            <p class="mt-2 text-sm text-gray-500 bg-blue-50 rounded-lg px-3 py-2 border-l-4 border-blue-400">
+                                <i class="fas fa-info-circle mr-1 text-blue-500"></i>
+                                {{ form.username.help_text }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo Email -->
+                    {% if form.email %}
+                    <div class="group">
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 transition-colors group-focus-within:text-emerald-600">
+                            <i class="fas fa-envelope mr-2 text-emerald-500"></i>
+                            Correo Electrónico
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-gray-400 group-focus-within:text-emerald-500 transition-colors"></i>
+                            </div>
+                            <input type="email" 
+                                   name="{{ form.email.name }}" 
+                                   id="{{ form.email.id_for_label }}"
+                                   class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:shadow-md"
+                                   placeholder="tu@email.com"
+                                   {% if form.email.value %}value="{{ form.email.value }}"{% endif %}>
+                        </div>
+                        {% if form.email.errors %}
+                            <div class="mt-2 space-y-1">
+                                {% for error in form.email.errors %}
+                                    <div class="flex items-center text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">
+                                        <i class="fas fa-exclamation-circle mr-2 text-xs"></i>
+                                        <span>{{ error }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Campo Password1 -->
+                    <div class="group">
+                        <label for="{{ form.password1.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 transition-colors group-focus-within:text-emerald-600">
+                            <i class="fas fa-lock mr-2 text-emerald-500"></i>
+                            Contraseña
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400 group-focus-within:text-emerald-500 transition-colors"></i>
+                            </div>
+                            <input type="password" 
+                                   name="{{ form.password1.name }}" 
+                                   id="{{ form.password1.id_for_label }}"
+                                   class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:shadow-md"
+                                   placeholder="Tu contraseña segura"
+                                   required>
+                            <button type="button" onclick="togglePassword('{{ form.password1.id_for_label }}')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-emerald-500 transition-colors">
+                                <i class="fas fa-eye" id="toggleIcon1"></i>
+                            </button>
+                        </div>
+                        {% if form.password1.errors %}
+                            <div class="mt-2 space-y-1">
+                                {% for error in form.password1.errors %}
+                                    <div class="flex items-center text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">
+                                        <i class="fas fa-exclamation-circle mr-2 text-xs"></i>
+                                        <span>{{ error }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if form.password1.help_text %}
+                            <div class="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                                <p class="font-semibold text-blue-800 mb-2 text-sm">
+                                    <i class="fas fa-shield-alt mr-2"></i>
+                                    Requisitos de contraseña:
+                                </p>
+                                <div class="text-blue-700 text-xs leading-relaxed">
+                                    {{ form.password1.help_text|safe }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo Password2 -->
+                    <div class="group">
+                        <label for="{{ form.password2.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 transition-colors group-focus-within:text-emerald-600">
+                            <i class="fas fa-lock mr-2 text-emerald-500"></i>
+                            Confirmar Contraseña
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400 group-focus-within:text-emerald-500 transition-colors"></i>
+                            </div>
+                            <input type="password" 
+                                   name="{{ form.password2.name }}" 
+                                   id="{{ form.password2.id_for_label }}"
+                                   class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:shadow-md"
+                                   placeholder="Confirma tu contraseña"
+                                   required>
+                            <button type="button" onclick="togglePassword('{{ form.password2.id_for_label }}')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-emerald-500 transition-colors">
+                                <i class="fas fa-eye" id="toggleIcon2"></i>
+                            </button>
+                        </div>
+                        {% if form.password2.errors %}
+                            <div class="mt-2 space-y-1">
+                                {% for error in form.password2.errors %}
+                                    <div class="flex items-center text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">
+                                        <i class="fas fa-exclamation-circle mr-2 text-xs"></i>
+                                        <span>{{ error }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Botón de registro -->
+                    <div class="pt-6">
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-xl focus:ring-4 focus:ring-emerald-300 focus:outline-none">
+                            <span class="flex items-center justify-center">
+                                <i class="fas fa-user-plus mr-2"></i>
+                                Crear Cuenta
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Enlaces adicionales -->
+        <div class="mt-8 text-center">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-4 bg-white text-gray-500 font-medium">¿Ya tienes cuenta?</span>
+                </div>
+            </div>
+            <div class="mt-6">
+                <a href="/signin" class="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-semibold transition-all duration-200 hover:scale-105 bg-white rounded-lg px-4 py-2 shadow-md hover:shadow-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Iniciar Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Función para alternar visibilidad de contraseña
+        window.togglePassword = function(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById('toggleIcon' + (fieldId.includes('password1') ? '1' : '2'));
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        };
+
+        // Validación en tiempo real
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
+        
+        inputs.forEach(input => {
+            // Efecto de animación al escribir
+            input.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    this.classList.add('border-emerald-400', 'bg-emerald-50');
+                } else {
+                    this.classList.remove('border-emerald-400', 'bg-emerald-50');
+                }
+            });
+
+            // Animación de foco mejorada
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('ring-2', 'ring-emerald-500/20');
+                this.classList.add('shadow-lg');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('ring-2', 'ring-emerald-500/20');
+                this.classList.remove('shadow-lg');
+            });
+        });
+
+        // Validación de confirmación de contraseña
+        const password1 = document.getElementById('{{ form.password1.id_for_label }}');
+        const password2 = document.getElementById('{{ form.password2.id_for_label }}');
+        
+        if (password1 && password2) {
+            password2.addEventListener('input', function() {
+                if (password1.value && password2.value) {
+                    if (password1.value === password2.value) {
+                        password2.classList.add('border-green-400', 'bg-green-50');
+                        password2.classList.remove('border-red-400', 'bg-red-50');
+                    } else {
+                        password2.classList.add('border-red-400', 'bg-red-50');
+                        password2.classList.remove('border-green-400', 'bg-green-50');
+                    }
+                }
+            });
+        }
+
+        // Animación de carga de página
+        const formContainer = document.querySelector('.bg-white\\/80');
+        if (formContainer) {
+            formContainer.style.opacity = '0';
+            formContainer.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                formContainer.style.transition = 'all 0.6s ease-out';
+                formContainer.style.opacity = '1';
+                formContainer.style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        console.log('Formulario de registro de Ganadek cargado con mejoras');
+    });
+</script>
+{% endblock %}

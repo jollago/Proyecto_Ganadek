@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - Ganadek{% endblock %}
+
+{% block breadcrumb %}
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="text-emerald-600 font-medium">Iniciar Sesión</li>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Contenedor principal con glassmorphism -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <!-- Header del formulario -->
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6 text-center">
+                <div class="bg-white/20 backdrop-blur-sm w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fas fa-sign-in-alt text-white text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white mb-2">Bienvenido</h1>
+                <p class="text-emerald-100">Inicia sesión en tu cuenta de Ganadek</p>
+            </div>
+
+            <!-- Contenido del formulario -->
+            <div class="p-8">
+                <!-- Mostrar errores si existen -->
+                {% if error %}
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4 mb-6 animate-pulse">
+                    <div class="flex items-center">
+                        <div class="bg-red-100 rounded-full p-2 mr-3">
+                            <i class="fas fa-exclamation-triangle text-red-500 text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="text-red-700 font-semibold text-sm">Error de autenticación</span>
+                            <p class="text-red-600 text-sm mt-1">{{ error }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Formulario de inicio de sesión -->
+                <form action="/signin/" method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Campo Username/Email -->
+                    <div class="group">
+                        <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 transition-colors group-focus-within:text-emerald-600">
+                            <i class="fas fa-user mr-2 text-emerald-500"></i>
+                            Usuario o Email
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400 group-focus-within:text-emerald-500 transition-colors"></i>
+                            </div>
+                            <input type="text" 
+                                   name="{{ form.username.name }}" 
+                                   id="{{ form.username.id_for_label }}"
+                                   class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:shadow-md"
+                                   placeholder="Tu usuario o email"
+                                   {% if form.username.value %}value="{{ form.username.value }}"{% endif %}
+                                   required>
+                        </div>
+                        {% if form.username.errors %}
+                            <div class="mt-2 space-y-1">
+                                {% for error in form.username.errors %}
+                                    <div class="flex items-center text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">
+                                        <i class="fas fa-exclamation-circle mr-2 text-xs"></i>
+                                        <span>{{ error }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo Password -->
+                    <div class="group">
+                        <label for="{{ form.password.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 transition-colors group-focus-within:text-emerald-600">
+                            <i class="fas fa-lock mr-2 text-emerald-500"></i>
+                            Contraseña
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400 group-focus-within:text-emerald-500 transition-colors"></i>
+                            </div>
+                            <input type="password" 
+                                   name="{{ form.password.name }}" 
+                                   id="{{ form.password.id_for_label }}"
+                                   class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:shadow-md"
+                                   placeholder="Tu contraseña"
+                                   required>
+                            <button type="button" onclick="togglePassword('{{ form.password.id_for_label }}')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-emerald-500 transition-colors">
+                                <i class="fas fa-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}
+                            <div class="mt-2 space-y-1">
+                                {% for error in form.password.errors %}
+                                    <div class="flex items-center text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">
+                                        <i class="fas fa-exclamation-circle mr-2 text-xs"></i>
+                                        <span>{{ error }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Recordar sesión y recuperar contraseña -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="remember" name="remember" class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded transition-colors">
+                            <label for="remember" class="ml-2 block text-sm text-gray-700 cursor-pointer">
+                                Recordar sesión
+                            </label>
+                        </div>
+                        <a href="/password-reset/" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
+
+                    <!-- Botón de inicio de sesión -->
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-xl focus:ring-4 focus:ring-emerald-300 focus:outline-none">
+                            <span class="flex items-center justify-center">
+                                <i class="fas fa-sign-in-alt mr-2"></i>
+                                Iniciar Sesión
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Separador -->
+                <div class="mt-8">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-4 bg-white text-gray-500 font-medium">O continúa con</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de redes sociales (opcional) -->
+                    <div class="mt-6 grid grid-cols-2 gap-3">
+                        <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
+                            <i class="fab fa-google text-red-500 mr-2"></i>
+                            Google
+                        </button>
+                        <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
+                            <i class="fab fa-facebook text-blue-600 mr-2"></i>
+                            Facebook
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enlaces adicionales -->
+        <div class="mt-8 text-center">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-4 bg-white text-gray-500 font-medium">¿No tienes cuenta?</span>
+                </div>
+            </div>
+            <div class="mt-6">
+                <a href="/signup/" class="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-semibold transition-all duration-200 hover:scale-105 bg-white rounded-lg px-4 py-2 shadow-md hover:shadow-lg">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Crear Cuenta
+                </a>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="mt-8 text-center">
+            <div class="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div class="flex items-center justify-center mb-2">
+                    <i class="fas fa-shield-alt text-emerald-500 mr-2"></i>
+                    <span class="text-sm font-medium text-gray-700">Acceso Seguro</span>
+                </div>
+                <p class="text-xs text-gray-500">
+                    Tu información está protegida con cifrado SSL
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Función para alternar visibilidad de contraseña
+        window.togglePassword = function(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById('toggleIcon');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        };
+
+        // Efectos de interacción mejorados
+        const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+        
+        inputs.forEach(input => {
+            // Efecto de escritura
+            input.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    this.classList.add('border-emerald-400', 'bg-emerald-50');
+                } else {
+                    this.classList.remove('border-emerald-400', 'bg-emerald-50');
+                }
+            });
+
+            // Animación de foco
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('ring-2', 'ring-emerald-500/20');
+                this.classList.add('shadow-lg');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('ring-2', 'ring-emerald-500/20');
+                this.classList.remove('shadow-lg');
+            });
+        });
+
+        // Animación de entrada
+        const formContainer = document.querySelector('.bg-white\\/80');
+        if (formContainer) {
+            formContainer.style.opacity = '0';
+            formContainer.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                formContainer.style.transition = 'all 0.6s ease-out';
+                formContainer.style.opacity = '1';
+                formContainer.style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        // Efecto de carga en botones sociales
+        const socialButtons = document.querySelectorAll('.grid button');
+        socialButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Conectando...';
+                this.disabled = true;
+                
+                // Simular carga (remover en implementación real)
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 2000);
+            });
+        });
+
+        // Validación de formulario
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const username = document.querySelector('input[name="username"]').value;
+            const password = document.querySelector('input[name="password"]').value;
+            
+            if (!username || !password) {
+                e.preventDefault();
+                alert('Por favor, completa todos los campos');
+                return;
+            }
+            
+            // Efecto de carga en botón
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Iniciando sesión...';
+            submitButton.disabled = true;
+        });
+
+        console.log('Formulario de inicio de sesión de Ganadek cargado');
+    });
+</script>
+{% endblock %}

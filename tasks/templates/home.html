@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+
+{% block title %}Ganadek - Sistema de Gestión Ganadera{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative overflow-hidden bg-gradient-to-br from-green-600 via-green-700 to-emerald-800 text-white -mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-8 sm:mb-12">
+    <div class="absolute inset-0 bg-black opacity-10"></div>
+    <div class="relative container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <!-- Texto Principal -->
+            <div class="text-center lg:text-left">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
+                    Revoluciona tu
+                    <span class="text-yellow-300">Ganadería</span>
+                    con Ganadek
+                </h1>
+                <p class="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 text-green-100 leading-relaxed">
+                    El sistema más completo para gestionar tu ganado, controlar la producción y maximizar tus ganancias
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    {% if not user.is_authenticated %}
+                    <a href="/signup" class="bg-yellow-400 hover:bg-yellow-500 text-green-900 px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        Comenzar Gratis
+                    </a>
+                    <a href="/signin" class="border-2 border-white hover:bg-white hover:text-green-800 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300">
+                        Iniciar Sesión
+                    </a>
+                    {% else %}
+                    <a href="/task" class="bg-yellow-400 hover:bg-yellow-500 text-green-900 px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        Ir al Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Imagen/Icono Principal -->
+            <div class="flex justify-center lg:justify-end">
+                <div class="relative">
+                    <div class="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-white/10 backdrop-blur-lg rounded-full flex items-center justify-center shadow-2xl">
+                        <i class="fas fa-cow text-8xl sm:text-9xl lg:text-10xl text-yellow-300"></i>
+                    </div>
+                    <!-- Elementos decorativos -->
+                    <div class="absolute -top-4 -right-4 w-12 h-12 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <div class="absolute -bottom-6 -left-6 w-8 h-8 bg-green-300 rounded-full animate-bounce"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Estadísticas -->
+<section class="py-8 sm:py-12 bg-white rounded-xl shadow-lg mb-8 sm:mb-12">
+    <div class="container mx-auto px-4 text-center">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            <div class="p-4">
+                <div class="text-3xl sm:text-4xl font-bold text-green-600 mb-2">500+</div>
+                <div class="text-gray-600 text-sm sm:text-base">Ganaderos Activos</div>
+            </div>
+            <div class="p-4">
+                <div class="text-3xl sm:text-4xl font-bold text-green-600 mb-2">50K+</div>
+                <div class="text-gray-600 text-sm sm:text-base">Animales Gestionados</div>
+            </div>
+            <div class="p-4">
+                <div class="text-3xl sm:text-4xl font-bold text-green-600 mb-2">99%</div>
+                <div class="text-gray-600 text-sm sm:text-base">Satisfacción</div>
+            </div>
+            <div class="p-4">
+                <div class="text-3xl sm:text-4xl font-bold text-green-600 mb-2">24/7</div>
+                <div class="text-gray-600 text-sm sm:text-base">Soporte</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Características Principales -->
+<section class="py-8 sm:py-12 mb-8 sm:mb-12">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-8 sm:mb-12">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">¿Por qué elegir Ganadek?</h2>
+            <p class="text-gray-600 text-lg sm:text-xl max-w-3xl mx-auto">
+                Tenemos todas las herramientas que necesitas para llevar tu ganadería al siguiente nivel
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Característica 1 -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                    <i class="fas fa-chart-line text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 text-center">Control Total</h3>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Monitorea el peso, salud, reproducción y producción de cada animal en tiempo real
+                </p>
+            </div>
+            
+            <!-- Característica 2 -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                    <i class="fas fa-mobile-alt text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 text-center">Acceso Móvil</h3>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Gestiona tu ganado desde cualquier lugar con nuestra aplicación móvil optimizada
+                </p>
+            </div>
+            
+            <!-- Característica 3 -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                    <i class="fas fa-brain text-2xl text-yellow-600"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 text-center">IA Avanzada</h3>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Predicciones inteligentes para optimizar la alimentación y detectar problemas de salud
+                </p>
+            </div>
+            
+            <!-- Característica 4 -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                    <i class="fas fa-file-invoice-dollar text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 text-center">Gestión Financiera</h3>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Controla gastos, ingresos y rentabilidad con reportes detallados y automáticos
+                </p>
+            </div>
+            
+            <!-- Característica 5 -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                    <i class="fas fa-heartbeat text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 text-center">Salud Animal</h3>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Seguimiento veterinario, vacunas, tratamientos y alertas de salud automatizadas
+                </p>
+            </div>
+            
+            <!-- Característica 6 -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                    <i class="fas fa-cloud text-2xl text-indigo-600"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 text-center">En la Nube</h3>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Tus datos seguros en la nube con acceso desde cualquier dispositivo, siempre respaldados
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonios -->
+<section class="py-8 sm:py-12 bg-gray-50 rounded-xl mb-8 sm:mb-12">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-8 sm:mb-12">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Lo que dicen nuestros ganaderos</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Testimonio 1 -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">Carlos Rodríguez</h4>
+                        <p class="text-gray-600 text-sm">Ganadero - Cundinamarca</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 italic">
+                    "Ganadek transformó mi finca. Ahora puedo controlar todo mi ganado desde mi celular y he aumentado mi productividad en un 30%."
+                </p>
+                <div class="flex text-yellow-400 mt-4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+            
+            <!-- Testimonio 2 -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">María González</h4>
+                        <p class="text-gray-600 text-sm">Ganadera - Antioquia</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 italic">
+                    "La gestión financiera de Ganadek me ayudó a identificar dónde estaba perdiendo dinero. Ahora mis ganancias son más estables."
+                </p>
+                <div class="flex text-yellow-400 mt-4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+            
+            <!-- Testimonio 3 -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">José Martínez</h4>
+                        <p class="text-gray-600 text-sm">Ganadero - Córdoba</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 italic">
+                    "Las alertas de salud me han salvado varios animales. El sistema detectó problemas que yo no había notado."
+                </p>
+                <div class="flex text-yellow-400 mt-4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Final -->
+<section class="py-8 sm:py-12 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl text-center">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">¿Listo para modernizar tu ganadería?</h2>
+        <p class="text-lg sm:text-xl mb-6 sm:mb-8 text-green-100">
+            Únete a cientos de ganaderos que ya están revolucionando su negocio con Ganadek
+        </p>
+        
+        {% if not user.is_authenticated %}
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/signup" class="bg-yellow-400 hover:bg-yellow-500 text-green-900 px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105">
+                Prueba Gratis por 30 días
+            </a>
+            <a href="#" class="border-2 border-white hover:bg-white hover:text-green-800 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300">
+                Ver Demo
+            </a>
+        </div>
+        {% else %}
+        <a href="/task" class="bg-yellow-400 hover:bg-yellow-500 text-green-900 px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105">
+            Continuar Gestionando
+        </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
