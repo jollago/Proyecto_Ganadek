@@ -7,18 +7,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sistema Ganadero{% endblock %}</title>
-    
+
     <!-- Tailwind CDN para desarrollo -->
-    <!--  <script src="https://cdn.tailwindcss.com"></script> --> 
+    <!--  <script src="https://cdn.tailwindcss.com"></script> -->
 
     <!-- CSS compilado desde tu carpeta static -->
-    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}"> 
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
 
-  <!-- Font Awesome -->
+    <!-- Font Awesome -->
     <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"> -->
 
-    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}"> 
-  
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+
 </head>
 
 <body class="bg-gradient-to-br from-green-50 to-amber-50 min-h-screen">
@@ -47,14 +47,14 @@
                 <!-- Usuario info (desktop) -->
                 {% if user.is_authenticated %}
                 <a href="/profile">
-                <div class="hidden md:flex items-center space-x-3 text-white">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-user text-green-600 text-sm"></i>
+                    <div class="hidden md:flex items-center space-x-3 text-white">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-user text-green-600 text-sm"></i>
+                            </div>
+                            <span class="font-medium text-sm lg:text-base truncate max-w-32">{{ user.username }}</span>
                         </div>
-                        <span class="font-medium text-sm lg:text-base truncate max-w-32">{{ user.username }}</span>
                     </div>
-                </div>
                 </a>
                 {% endif %}
             </div>
@@ -78,6 +78,14 @@
                             <span>Panel Informativo</span>
                         </a>
                     </li>
+                     <li>
+                        <a href="/Fincas"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg hover:bg-white/20 text-white transition-all duration-200 text-sm lg:text-base">
+                            <i class="fas fa-laptop-house"></i>
+                            <span>Fincas</span>
+                        </a>
+                    </li>
+                    <li>
                     <li>
                         <a href="#"
                             class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg hover:bg-white/20 text-white transition-all duration-200 text-sm lg:text-base">
@@ -119,15 +127,18 @@
             <!-- Menú móvil (inicialmente oculto) -->
             <nav id="mobile-menu" class="md:hidden pb-4 hidden">
                 <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 space-y-2">
+
                     <!-- Info del usuario en móvil -->
-                    {% if user.is_authenticated %}
-                    <div class="flex items-center space-x-3 text-white pb-3 border-b border-white/20">
-                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-green-600"></i>
+                    <a href="/profile">
+                        {% if user.is_authenticated %}
+                        <div class="flex items-center space-x-3 text-white pb-3 border-b border-white/20">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-green-600"></i>
+                            </div>
+                            <span class="font-medium">{{ user.username }}</span>
                         </div>
-                        <span class="font-medium">{{ user.username }}</span>
-                    </div>
-                    {% endif %}
+                        {% endif %}
+                    </a>
 
                     <!-- Enlaces de navegación móvil -->
                     <a href="/"

@@ -54,6 +54,7 @@ class Empleado(models.Model):
     puesto = models.CharField(max_length=100, blank=True, null=True)
     fechacontratacion = models.DateField(db_column='fechaContratacion', blank=True, null=True)
     salario = models.FloatField(blank=True, null=True)
+    estado = models.CharField(max_length=50, blank=True, null=True)
 
     # Nuevo: Relación con usuario (auth_user)
     usuario = models.OneToOneField(User, on_delete=models.CASCADE, db_column='idUsuario', blank=True, null=True)
@@ -73,9 +74,12 @@ class Finca(models.Model):
     hectareas = models.IntegerField(blank=True, null=True)
     fuenteagua = models.CharField(db_column='fuenteAgua', max_length=100, blank=True, null=True)  # Field name made lowercase.
     explotacion = models.CharField(max_length=100, blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=100, blank=True, null=True)
+
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'finca'
 
 
@@ -141,7 +145,7 @@ class Padre(models.Model):
 
 class Potrero(models.Model):
     idpotrero = models.AutoField(db_column='idPotrero', primary_key=True)  # Field name made lowercase.
-    idfinca = models.ForeignKey(Finca, models.DO_NOTHING, db_column='idFinca', blank=True, null=True)  # Field name made lowercase.
+    idfinca = models.ForeignKey(Finca, models.DO_NOTHING, db_column='idFinca', blank=True, null=True , related_name='potreros')  # Field name made lowercase.
     nombre = models.CharField(max_length=100, blank=True, null=True)
     area = models.FloatField(blank=True, null=True)
     fuenteagua = models.CharField(db_column='fuenteAgua', max_length=100, blank=True, null=True)  # Field name made lowercase.

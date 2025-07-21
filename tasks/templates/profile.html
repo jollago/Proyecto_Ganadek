@@ -4,9 +4,6 @@
 
 {% block breadcrumb %}
 <li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
-<li><a href="/Panel Informativo" class="text-gray-600 hover:text-emerald-600 transition-colors">Panel Informativo</a>
-</li>
-<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
 <li class="text-emerald-600 font-medium">Mi Perfil</li>
 {% endblock %}
 
@@ -64,7 +61,7 @@
                         </button>
                     </div>
 
-                    <form id="profileForm" method="POST" class="space-y-6">
+                    <form id="profileForm" method="POST"  action=""  class="space-y-6">
                         {% csrf_token %}
 
                         <!-- Nombre de Usuario -->
@@ -143,7 +140,7 @@
                                 class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl transition-colors">
                                 <i class="fas fa-times mr-2"></i>Cancelar
                             </button>
-                            <button type="submit"
+                            <button type="submit" 
                                 class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl transition-colors">
                                 <i class="fas fa-save mr-2"></i>Guardar Cambios
                             </button>
@@ -239,7 +236,7 @@
                 </div>
 
 
-                <!-- Estadísticas -->
+                <!-- Estadísticas 
                 <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">
                         <i class="fas fa-chart-line mr-2 text-emerald-500"></i>
@@ -257,7 +254,8 @@
                             <span class="text-sm font-medium text-emerald-600">85%</span>
                         </div>
                     </div>
-                </div>
+                </div>-->
+
             </div>
         </div>
     </div>

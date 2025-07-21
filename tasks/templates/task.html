@@ -88,9 +88,11 @@
                             <p class="text-sm font-medium text-gray-600 mb-1">Total Animales</p>
                             <p class="text-3xl font-bold text-gray-900">{{ total_animales|default:"0" }}</p>
                             <div class="flex items-center mt-2">
-                                <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
+                            <!--     <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
                                 <span class="text-green-500 text-sm font-medium">2.5%</span>
-                                <span class="text-gray-500 text-xs ml-1">vs mes anterior</span>
+                                <span class="text-gray-500 text-xs ml-1">vs mes anterior</span>-->
+                                <span class="text-gray-500 text-sm font-medium">Sin cambios</span>
+
                             </div>
                         </div>
                         <div class="bg-emerald-100 rounded-full p-3">
@@ -106,9 +108,11 @@
                             <p class="text-sm font-medium text-gray-600 mb-1">Producción Mensual</p>
                             <p class="text-3xl font-bold text-gray-900"> {{ produccion_total|floatformat:0|default:"0" }} L</p>
                             <div class="flex items-center mt-2">
-                                <i class="fas fa-arrow-down text-red-500 text-xs mr-1"></i>
+                             <!--    <i class="fas fa-arrow-down text-red-500 text-xs mr-1"></i>
                                 <span class="text-red-500 text-sm font-medium">1.2%</span>
-                                <span class="text-gray-500 text-xs ml-1">vs mes anterior</span>
+                                <span class="text-gray-500 text-xs ml-1">vs mes anterior</span>-->
+                                <span class="text-gray-500 text-sm font-medium">Sin cambios</span>
+
                             </div>
                         </div>
                         <div class="bg-blue-100 rounded-full p-3">
@@ -123,11 +127,16 @@
                         <div>
                             <p class="text-sm font-medium text-gray-600 mb-1">Nacimientos Mes</p>
                             <p class="text-3xl font-bold text-gray-900">{{ nacimientos_mes|default:"0" }}</p>
+                            
+                          
                             <div class="flex items-center mt-2">
-                                <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
-                                <span class="text-green-500 text-sm font-medium">+4</span>
-                                <span class="text-gray-500 text-xs ml-1">vs mes anterior</span>
+                            <!--     <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
+                               <span class="text-green-500 text-sm font-medium">+4</span>
+                                <span class="text-gray-500 text-xs ml-1">vs mes anterior</span>--->
+                                <span class="text-gray-500 text-sm font-medium">Sin cambios</span>
                             </div>
+                           
+
                         </div>
                         <div class="bg-pink-100 rounded-full p-3">
                             <i class="fas fa-baby text-pink-600 text-xl"></i>
@@ -161,11 +170,11 @@
                 Acceso Rápido
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <a href="{% url 'listar_fincas' %}" class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                <a href="{% url 'finca_list' %}" class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="font-semibold text-lg">Fincas</h3>
-                            <p class="text-emerald-100 text-sm">Gestionar fincas</p>
+                            <p class="text-emerald-100 text-sm">Gestionar Fincas</p>
                         </div>
                         <i class="fas fa-map-marker-alt text-2xl text-emerald-200"></i>
                     </div>
