@@ -20,9 +20,6 @@
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                     {% if not user.is_authenticated %}
-                    <a href="/signup" class="bg-yellow-400 hover:bg-yellow-500 text-green-900 px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        Comenzar Gratis
-                    </a>
                     <a href="/signin" class="border-2 border-white hover:bg-white hover:text-green-800 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300">
                         Iniciar Sesión
                     </a>
@@ -243,11 +240,8 @@
         
         {% if not user.is_authenticated %}
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/signup" class="bg-yellow-400 hover:bg-yellow-500 text-green-900 px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105">
-                Prueba Gratis por 30 días
-            </a>
             <a href="#" class="border-2 border-white hover:bg-white hover:text-green-800 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300">
-                Ver Demo
+                Contactanos
             </a>
         </div>
         {% else %}

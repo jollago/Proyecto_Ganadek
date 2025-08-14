@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col min-h-screen bg-gray-50">
+    <div class="flex-grow py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl mx-auto w-full">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">✏️ Editar Animal</h1>
+                <p class="text-gray-600 text-sm sm:text-base">Modifica la información del animal #{{ animal.numero }}</p>
+            </div>
+
+            <!-- Form Card -->
+            <div class="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow">
+                <!-- Encabezado -->
+                <div class="bg-yellow-500 p-4 sm:p-6">
+                    <h2 class="text-white text-lg sm:text-xl font-semibold flex items-center">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Actualizar Información
+                    </h2>
+                    <p class="text-yellow-100 mt-1 text-sm">Modifica los campos que desees cambiar</p>
+                </div>
+                
+                <form method="post" class="p-6 sm:p-8">
+                {% csrf_token %}
+                {% load widget_tweaks %}
+
+                <!-- Grid responsivo: 1 columna en móviles, 2 en md y superiores -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for field in form %}
+                        <div>
+                            <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                                {{ field.label }}
+                                {% if field.field.required %}
+                                    <span class="text-red-500">*</span>
+                                {% endif %}
+                            </label>
+
+                            {% if field.field.widget.input_type == 'text' or field.field.widget.input_type == 'number' %}
+                                {{ field|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-yellow-500 focus:ring-1 focus:ring-yellow-400 transition" }}
+                            {% elif field.field.widget.input_type == 'select' %}
+                                {{ field|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-yellow-500 focus:ring-1 focus:ring-yellow-400 transition bg-white cursor-pointer" }}
+                            {% else %}
+                                {{ field|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-yellow-500 focus:ring-1 focus:ring-yellow-400 transition" }}
+                            {% endif %}
+
+                            {% if field.help_text %}
+                                <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Botones -->
+                <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+                    <a href="{% url 'animal_detail' animal.pk %}" class="flex-1 bg-red-500 hover:bg-red-500 text-white text-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-center px-3 py-2.5 rounded-lg font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">
+                        Actualizar Animal
+                    </button>
+                </div>
+            </form>
+
+
+            </div>
+
+            <!-- Volver -->
+            <div class="mt-6 text-center">
+                <a href="{% url 'animal_list' %}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">Ver todos los animales</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

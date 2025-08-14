@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">🔍 Detalle del Animal</h1>
+                <p class="text-gray-600">Información completa del animal #{{ animal.idanimal }}</p>
+            </div>
+
+            <!-- Animal Info Card -->
+            <div class="bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-100 mb-6">
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
+                    <h2 class="text-white text-2xl font-semibold flex items-center">
+                        <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Información del Animal
+                    </h2>
+                </div>
+                
+                <div class="p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-6">
+                            <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-blue-500">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                                    </svg>
+                                    <span class="font-semibold text-gray-700">Número:</span>
+                                </div>
+                                <span class="text-xl font-bold text-blue-600">#{{ animal.idanimal }}</span>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-green-500">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                    <span class="font-semibold text-gray-700">Especie:</span>
+                                </div>
+                                <span class="text-lg text-gray-800">{{ animal.especie|default:"Sin nombre asignado" }}</span>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-purple-500">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                    <span class="font-semibold text-gray-700">Raza:</span>
+                                </div>
+                                <span class="text-lg text-gray-800">{{ animal.raza }}</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-pink-500">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-pink-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H9m1.5 0H5.5m3 0a1.5 1.5 0 01-3 0"></path>
+                                    </svg>
+                                    <span class="font-semibold text-gray-700">Sexo:</span>
+                                </div>
+                                <span class="text-lg text-gray-800">{{ animal.sexo }}</span>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-yellow-500">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="font-semibold text-gray-700">Edad:</span>
+                                </div>
+                                <span class="text-lg text-gray-800">{{ animal.edad }} años</span>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-500">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                    <span class="font-semibold text-gray-700">Unidad Productiva:</span>
+                                </div>
+                                <span class="text-lg text-gray-800">{{ animal.idunidad.nombre }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="bg-white shadow-xl rounded-2xl p-6 border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                    </svg>
+                    Acciones Disponibles
+                </h3>
+                
+                <div class="flex flex-wrap gap-4">
+                    <a href="{% url 'animal_edit' animal.pk %}" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-center px-3 py-2.5 rounded-lg font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Editar
+                    </a>
+                    
+                    <a href="{% url 'animal_delete' animal.pk %}" class="flex-1 bg-red-500 hover:bg-red-500 text-white text-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Eliminar
+                    </a>
+                    
+                    <a href="{% url 'animal_list' %}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                        </svg>
+                        Volver a la Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .container > div {
+        animation: fadeIn 0.6s ease-out;
+    }
+    
+    .bg-gray-50 {
+        transition: all 0.3s ease;
+    }
+    
+    .bg-gray-50:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

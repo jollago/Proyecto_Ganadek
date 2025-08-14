@@ -19,6 +19,7 @@
 
     <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
 
+
 </head>
 
 <body class="bg-gradient-to-br from-green-50 to-amber-50 min-h-screen">
@@ -62,9 +63,10 @@
             <!-- Navegación desktop -->
             <nav class="pb-3 sm:pb-4 hidden md:block">
                 <ul class="flex flex-wrap space-x-1 lg:space-x-2">
+                
                     <li>
                         <a href="/"
-                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all duration-200 backdrop-blur-sm text-sm lg:text-base">
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg  {%if request.path == '/'%} bg-white/10 backdrop-blur-sm  {% else %}hover:bg-white/20 text-white transition-all duration-200  text-sm lg:text-base  {% endif %}">
                             <i class="fas fa-home"></i>
                             <span>Inicio</span>
                         </a>
@@ -73,24 +75,32 @@
                     {% if user.is_authenticated %}
                     <li>
                         <a href="/Panel Informativo"
-                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg hover:bg-white/20 text-white transition-all duration-200 text-sm lg:text-base">
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg  {%if request.path == '/Panel Informativo/'%} bg-white/10 backdrop-blur-sm  {% else %}hover:bg-white/20 text-white transition-all duration-200  text-sm lg:text-base  {% endif %}">
+
                             <i class="fas fa-tasks"></i>
                             <span>Panel Informativo</span>
                         </a>
                     </li>
                      <li>
                         <a href="/Fincas"
-                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg hover:bg-white/20 text-white transition-all duration-200 text-sm lg:text-base">
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg  {%if request.path == '/Fincas/'%} bg-white/10 backdrop-blur-sm  {% else %}hover:bg-white/20 text-white transition-all duration-200  text-sm lg:text-base  {% endif %}">
+
                             <i class="fas fa-laptop-house"></i>
                             <span>Fincas</span>
                         </a>
                     </li>
                     <li>
                     <li>
-                        <a href="#"
-                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg hover:bg-white/20 text-white transition-all duration-200 text-sm lg:text-base">
+                        <a href="/UnidadProductiva"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg  {%if request.path == '/Fincas'%} bg-white/10 backdrop-blur-sm  {% else %}hover:bg-white/20 text-white transition-all duration-200  text-sm lg:text-base  {% endif %}">
                             <i class="fas fa-chart-line"></i>
-                            <span>Reportes</span>
+                            <span>Unidad Productiva</span>
+                        </a>
+                    </li><li>
+                        <a href="/Animal"
+                            class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg  {%if request.path == '/Fincas'%} bg-white/10 backdrop-blur-sm  {% else %}hover:bg-white/20 text-white transition-all duration-200  text-sm lg:text-base  {% endif %}">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Animales</span>
                         </a>
                     </li>
                     <li>
@@ -107,13 +117,14 @@
                             <span>Cerrar Sesión</span>
                         </a>
                     </li>
-                    {% else %}
-                    <li class="ml-auto flex space-x-2">
-                        <a href="/signup"
+                <!--<a href="/signup"
                             class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-all duration-200 text-sm lg:text-base">
                             <i class="fas fa-user-plus"></i>
                             <span>Registrarse</span>
-                        </a>
+                        </a>-->
+                    {% else %}
+                    <li class="ml-auto flex space-x-2">
+                        
                         <a href="/signin"
                             class="flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 text-sm lg:text-base">
                             <i class="fas fa-sign-in-alt"></i>
@@ -151,7 +162,11 @@
                     <a href="/Panel Informativo"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-white/20 text-white transition-colors">
                         <i class="fas fa-tasks w-5"></i>
-                        <span>Tareas</span>
+                        <span>Panel Informativo</span>
+                    </a><a href="/Fincas"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-white/20 text-white transition-colors">
+                        <i class="fas fa-laptop-house"></i>
+                        <span>Fincas</span>
                     </a>
                     <a href="#"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-white/20 text-white transition-colors">
@@ -168,12 +183,13 @@
                         <i class="fas fa-sign-out-alt w-5"></i>
                         <span>Cerrar Sesión</span>
                     </a>
-                    {% else %}
-                    <a href="/signup"
+                    <!--<a href="/signup"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors">
                         <i class="fas fa-user-plus w-5"></i>
                         <span>Registrarse</span>
-                    </a>
+                    </a>-->
+                    {% else %}
+                    
                     <a href="/signin"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors">
                         <i class="fas fa-sign-in-alt w-5"></i>
@@ -215,10 +231,7 @@
 
                 {% if not user.is_authenticated %}
                 <div class="flex flex-col xs:flex-row justify-center space-y-3 xs:space-y-0 xs:space-x-4 px-4">
-                    <a href="/signup"
-                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors text-center">
-                        Comenzar Ahora
-                    </a>
+                    
                     <a href="/signin"
                         class="border border-green-600 text-green-600 hover:bg-green-50 px-6 py-3 rounded-lg font-medium transition-colors text-center">
                         Iniciar Sesión

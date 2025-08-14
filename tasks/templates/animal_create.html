@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Registrar Animal - Ganadek{% endblock %}
+
+{% block breadcrumb %}
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="flex-shrink-0">
+    <a href="{% url 'animal_list' %}" class="hover:text-green-600 transition-colors">Animales</a>
+</li>
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="text-emerald-600 font-medium">Registrar Animal</li>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-6">
+            <div class="flex items-center">
+                <i class="fas fa-cow text-white text-3xl mr-4"></i>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Registrar Nuevo Animal</h2>
+                    <p class="text-green-100">Registra los datos del animal en el sistema ganadero</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <form id="animalForm" method="post" enctype="multipart/form-data" class="p-8">
+            {% csrf_token %}
+
+            <!-- Información Básica -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                    Información Básica
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Unidad Productiva -->
+                    <div class="form-group">
+                        <label for="{{ form.idunidad.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-warehouse text-gray-400 mr-1"></i>
+                            Unidad Productiva *
+                        </label>
+                        <select name="idunidad" id="{{ form.idunidad.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" required>
+                            {% with selected_id=form.idunidad.value|stringformat:"s" %}
+                                {% for unidad in form.idunidad.field.queryset %}
+                                    {% with current_id=unidad.pk|stringformat:"s" %}
+                                        <option value="{{ current_id }}" {% if selected_id == current_id %}selected{% endif %}>
+                                            {{ unidad.nombre }}
+                                        </option>
+                                    {% endwith %}
+                                {% endfor %}
+                            {% endwith %}
+                        </select>
+                        {% if form.idunidad.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.idunidad.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Especie -->
+                    <div class="form-group">
+                        <label for="{{ form.especie.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-dna text-gray-400 mr-1"></i>
+                            {{ form.especie.label }} *
+                        </label>
+                        <input type="text" name="especie" id="{{ form.especie.id_for_label }}" value="{{ form.especie.value|default_if_none:'' }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" required>
+                        {% if form.especie.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.especie.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Raza -->
+                    <div class="form-group">
+                        <label for="{{ form.raza.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-dog text-gray-400 mr-1"></i>
+                            {{ form.raza.label }}
+                        </label>
+                        <input type="text" name="raza" id="{{ form.raza.id_for_label }}" value="{{ form.raza.value|default_if_none:'' }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                        {% if form.raza.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.raza.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Sexo -->
+                    <div class="form-group">
+                        <label for="{{ form.sexo.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-venus-mars text-gray-400 mr-1"></i>
+                            {{ form.sexo.label }} *
+                        </label>
+                        {{ form.sexo|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" }}
+                        {% if form.sexo.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.sexo.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Peso -->
+                    <div class="form-group">
+                        <label for="{{ form.peso.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-weight text-gray-400 mr-1"></i>
+                            {{ form.peso.label }}
+                        </label>
+                        <input type="number" step="0.01" name="peso" id="{{ form.peso.id_for_label }}" value="{{ form.peso.value|default_if_none:'' }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                        {% if form.peso.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.peso.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Fecha de Nacimiento -->
+                    <div class="form-group">
+                        <label for="{{ form.fechanacimiento.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-birthday-cake text-gray-400 mr-1"></i>
+                            {{ form.fechanacimiento.label }}
+                        </label>
+                        <input type="date" name="fechanacimiento" id="{{ form.fechanacimiento.id_for_label }}" value="{{ form.fechanacimiento.value|default_if_none:'' }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                        {% if form.fechanacimiento.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.fechanacimiento.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Madre -->
+                    <div class="form-group">
+                        <label for="{{ form.idmadre.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-female text-gray-400 mr-1"></i>
+                            Madre
+                        </label>
+                        <select name="idmadre" id="{{ form.idmadre.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Seleccione la madre</option>
+                            {% with selected_madre=form.idmadre.value|stringformat:"s" %}
+                                {% for madre in form.idmadre.field.queryset %}
+                                    {% with mid=madre.pk|stringformat:"s" %}
+                                        <option value="{{ mid }}" {% if selected_madre == mid %}selected{% endif %}>
+                                            ID {{ madre.pk }}{% if madre.especie %} – {{ madre.especie }}{% endif %}{% if madre.raza %} ({{ madre.raza }}){% endif %}
+                                        </option>
+                                    {% endwith %}
+                                {% endfor %}
+                            {% endwith %}
+                        </select>
+                        {% if form.idmadre.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.idmadre.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Padre -->
+                    <div class="form-group">
+                        <label for="{{ form.idpadre.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-male text-gray-400 mr-1"></i>
+                            Padre
+                        </label>
+                        <select name="idpadre" id="{{ form.idpadre.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Seleccione el padre</option>
+                            {% with selected_padre=form.idpadre.value|stringformat:"s" %}
+                                {% for padre in form.idpadre.field.queryset %}
+                                    {% with pid=padre.pk|stringformat:"s" %}
+                                        <option value="{{ pid }}" {% if selected_padre == pid %}selected{% endif %}>
+                                            ID {{ padre.pk }}{% if padre.especie %} – {{ padre.especie }}{% endif %}{% if padre.raza %} ({{ padre.raza }}){% endif %}
+                                        </option>
+                                    {% endwith %}
+                                {% endfor %}
+                            {% endwith %}
+                        </select>
+                        {% if form.idpadre.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.idpadre.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Imagen -->
+                    <div class="form-group">
+                        <label for="{{ form.imagen.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-image text-gray-400 mr-1"></i>
+                            {{ form.imagen.label }}
+                        </label>
+                        {{ form.imagen|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" }}
+                        {% if form.imagen.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.imagen.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="form-group">
+                        <label for="{{ form.estado.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-toggle-on text-gray-400 mr-1"></i>
+                            {{ form.estado.label }}
+                        </label>
+                        {{ form.estado|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" }}
+                        {% if form.estado.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.estado.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
+                <a href="{% url 'animal_list' %}" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200 flex items-center justify-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Cancelar
+                </a>
+                <button type="submit" class="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition duration-200 flex items-center justify-center shadow-lg">
+                    <i class="fas fa-save mr-2"></i>
+                    Guardar Animal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Validación simple del peso
+    const pesoField = document.getElementById('{{ form.peso.id_for_label }}');
+    if (pesoField) {
+        pesoField.addEventListener('input', function () {
+            const value = parseFloat(this.value);
+            if (!isNaN(value) && value < 0) {
+                this.setCustomValidity('El peso no puede ser negativo');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

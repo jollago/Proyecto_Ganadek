@@ -1,6 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from http.client import HTTPResponse
 from django.http import HttpResponse
+from django.views import View
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt 
 from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
@@ -10,19 +14,15 @@ from django.db import IntegrityError
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from.models import *
-from .forms import FincaForm, PotreroForm,PotreroCreateForm,PotreroQuickForm,PotreroEditForm
+from .forms import CustomUserCreationForm, FincaForm, UnidadProductivaForm
 from django.db.models import Count, Sum, Q
 from decimal import Decimal, ROUND_HALF_UP
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.timezone import now
+from django import forms
 
-
-# Create your views here.
-
-
-
-# views.py
-
+# ============= VISTAS PARA GESTION DE USUARIOS =============
 @login_required
 def password_change(request):
     if request.method == 'POST':
@@ -52,6 +52,8 @@ def signup(request):
             try:
                 user = User.objects.create_user(username=request.POST['username'], 
                 password=request.POST['password1'])
+                user = User.objects.get(username =request.POST['username'])
+                user.last_login = now()
                 user.save()
                 login(request,user)
                 return redirect('PanelInformativo')
@@ -65,28 +67,34 @@ def signup(request):
                     'form':UserCreationForm,
                     "error":'La contraseña no coincide'
                 })
-  
-        
+
+
 def signout(request):
     logout(request)
     return redirect('home')
 
 def signin(request):
     if request.method == 'GET':
-        
-        return render (request, 'signin.html',{
+        return render(request, 'signin.html', {
             'form': AuthenticationForm
         })
     else:
-        user= authenticate(request, username=request.POST['username'],
-            password=request.POST['password'])      
+        user = authenticate(request, username=request.POST['username'],
+                            password=request.POST['password'])
+
         if user is None:
-            return render (request, 'signin.html',{
-            'form': AuthenticationForm,
-            'error': 'Usuario o Contraseña incorrecta'
-        })
+            return render(request, 'signin.html', {
+                'form': AuthenticationForm,
+                'error': 'Usuario o Contraseña incorrecta'
+            })
+        if user.is_active == False:
+            return render(request, 'signin.html', {
+                'form': AuthenticationForm,
+                'error': 'Tu cuenta ha sido desactivada. Contacta al administrador.'
+            })
         else:
-            login(request,user)
+            login(request, user)  
+            messages.success(request, 'Inicio de sesión exitoso.')
             return redirect('PanelInformativo')
     
 def home (request):
@@ -95,23 +103,246 @@ def home (request):
 def profile(request):
     user = request.user
     if request.method == 'POST':
-        user.first_name = request.POST.get('first_name', '')
-        user.last_name = request.POST.get('last_name', '')
-        user.email = request.POST.get('email', '')
-        user.save()
-        if user:
-          # Si el usuario se actualizó correctamente, muestra un mensaje de éxito
-                messages.success(request, 'Perfil actualizado exitosamente.')
-        else:
-            # Si hubo un error al actualizar el usuario, muestra un mensaje de error
-            messages.error(request, 'Error al actualizar el perfil. Por favor, inténtalo de nuevo.')
-        return redirect('profile')  # Redirige para evitar doble envío
-    # Si el método no es POST, simplemente renderiza el perfil 
-    return render(request, 'profile.html', {
-        'user': request.user
+        nuevo_username = request.POST.get('username', '').strip()
+        nuevo_first_name = request.POST.get('first_name', '').strip()
+        nuevo_last_name = request.POST.get('last_name', '').strip()
+        nuevo_email = request.POST.get('email', '').strip()
+
+        if User.objects.exclude(pk=user.pk).filter(username=nuevo_username).exists():
+            messages.error(request, 'El nombre de usuario ya está en uso por otro usuario.')
+            return redirect('profile')
+
+        try:
+            user.username = nuevo_username
+            user.first_name = nuevo_first_name
+            user.last_name = nuevo_last_name
+            user.email = nuevo_email
+            user.save()
+            messages.success(request, 'Perfil actualizado exitosamente.')
+        except IntegrityError:
+            messages.error(request, 'Ocurrió un error al actualizar el perfil. Inténtalo nuevamente.')
+        
+        return redirect('profile')
+
+    return render(request, 'profile.html', { 
+        'user': user,
+        'ultimo_acceso': request.user.last_login 
+        
     })
 
 
+# Form personalizado para crear/editar usuarios
+class CustomUserForm(forms.ModelForm):
+    
+    password1 = forms.CharField(
+        label='Contraseña',
+        widget=forms.PasswordInput(),
+        required=False,
+        help_text='Mínimo 8 caracteres'
+    )
+    password2 = forms.CharField(
+        label='Confirmar contraseña',
+        widget=forms.PasswordInput(),
+        required=False
+    )
+    role = forms.ChoiceField(
+        choices=[
+            ('user', 'Usuario'),
+            ('staff', 'Staff'),
+            ('admin', 'Administrador')
+        ],
+        required=False,
+        initial='user'
+    )
+    status = forms.ChoiceField(
+        choices=[
+            ('active', 'Activo'),
+            ('inactive', 'Inactivo')
+        ],
+        required=False,
+        initial='active'
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
+
+    def __init__(self, *args, **kwargs):
+        self.is_editing = kwargs.pop('is_editing', False)
+        super().__init__(*args, **kwargs)
+        
+        # Si estamos editando, la contraseña no es requerida
+        if not self.is_editing:
+            self.fields['password1'].required = True
+            self.fields['password2'].required = True
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        
+        if not self.is_editing and password1 and password2:
+            if password1 != password2:
+                raise forms.ValidationError("Las contraseñas no coinciden")
+            if len(password1) < 8:
+                raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres")
+        
+        return password2
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if self.instance.pk:
+            # Si estamos editando, excluir el usuario actual de la verificación
+            if User.objects.filter(username=username).exclude(pk=self.instance.pk).exists():
+                raise forms.ValidationError("Este nombre de usuario ya existe")
+        else:
+            # Si estamos creando, verificar que no exista
+            if User.objects.filter(username=username).exists():
+                raise forms.ValidationError("Este nombre de usuario ya existe")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if self.instance.pk:
+            # Si estamos editando, excluir el usuario actual de la verificación
+            if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+                raise forms.ValidationError("Este email ya está registrado")
+        else:
+            # Si estamos creando, verificar que no exista
+            if User.objects.filter(email=email).exists():
+                raise forms.ValidationError("Este email ya está registrado")
+        return 
+    
+    
+    
+
+def gestion_usuarios(request):
+    # Verificar que el usuario tenga permisos de administrador
+    if not request.user.is_staff:
+        messages.error(request, 'No tienes permisos para acceder a esta página')
+        return redirect('PanelInformativo')  # o la página que corresponda
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        user_id = request.POST.get('user_id')
+
+        try:
+            if action == 'delete':
+                if user_id == str(request.user.id):
+                    messages.error(request, 'No puedes eliminar tu propio usuario')
+                else:
+                    user = get_object_or_404(User, id=user_id)
+                    username = user.username
+                    user.delete()
+                    messages.success(request, f'Usuario "{username}" eliminado correctamente')
+
+            elif action == 'toggle_status':
+                if user_id == str(request.user.id):
+                    messages.error(request, 'No puedes cambiar tu propio estado')
+                else:
+                    user = get_object_or_404(User, id=user_id)
+                    user.is_active = not user.is_active
+                    user.save()
+                    status = 'activado' if user.is_active else 'desactivado'
+                    messages.success(request, f'Usuario "{user.username}" {status} correctamente')
+            
+
+            elif action == 'create':
+                
+                form = CustomUserForm(request.POST, is_editing=False)
+                if form.is_valid():
+                    print("Formulario válido")
+                    print(form.cleaned_data)
+
+
+                    user = form.save(commit=False)
+                    
+                    # Establecer contraseña
+                    password = form.cleaned_data.get('password1')
+                    if password:
+                        user.set_password(password)
+                    
+                    # Establecer rol
+                    role = form.cleaned_data.get('role', 'user')
+                    if role == 'admin':
+                        user.is_staff = True
+                        user.is_superuser = True
+                    elif role == 'staff':
+                        user.is_staff = True
+                        user.is_superuser = False
+                    else:
+                        user.is_staff = False
+                        user.is_superuser = False
+                    
+                    # Establecer estado
+                    status = form.cleaned_data.get('status', 'active')
+                    user.is_active = (status == 'active')
+                    
+                    user.save()
+                    messages.success(request, f'Usuario "{user.username}" creado correctamente')
+                else:
+
+                    # Si hay errores, mostrar el modal con los errores
+                    usuarios = User.objects.all().order_by('username')
+                    return render(request, 'gestion_usuario.html', {
+                        'usuarios': usuarios,
+                        'form': form,
+                        'show_modal': True,
+                        'error': 'Por favor corrige los errores en el formulario'
+                    })
+
+            elif action == 'edit':
+                user = get_object_or_404(User, id=user_id)
+                form = CustomUserForm(request.POST, instance=user, is_editing=True)
+                if form.is_valid():
+                    user = form.save(commit=False)
+                    
+                    # Actualizar rol
+                    role = request.POST.get('role', 'user')
+                    if role == 'admin':
+                        user.is_staff = True
+                        user.is_superuser = True
+                    elif role == 'staff':
+                        user.is_staff = True
+                        user.is_superuser = False
+                    else:
+                        user.is_staff = False
+                        user.is_superuser = False
+                    
+                    # Actualizar estado
+                    status = request.POST.get('status', 'active')
+                    user.is_active = (status == 'active')
+                    
+                    # Actualizar contraseña solo si se proporcionó una nueva
+                    password = form.cleaned_data.get('password1')
+                    if password:
+                        user.set_password(password)
+                    
+                    user.save()
+                    messages.success(request, f'Usuario "{user.username}" actualizado correctamente')
+                else:
+                    # Si hay errores, mostrar el modal con los errores
+                    usuarios = User.objects.all().order_by('username')
+                    return render(request, 'gestion_usuario.html', {
+                        'usuarios': usuarios,
+                        'form': form,
+                        'show_modal': True,
+                        'error': 'Por favor corrige los errores en el formulario'
+                    })
+
+        except Exception as e:
+            messages.error(request, f'Error al procesar la acción: {str(e)}')
+
+        return redirect('gestion_usuarios')
+
+    # GET request - mostrar la página
+    usuarios = User.objects.all().order_by('username')
+    form = CustomUserForm()
+    
+    return render(request, 'gestion_usuario.html', {
+        'usuarios': usuarios,
+        'form': form,
+        'show_modal': False
+    })
 
 def PanelInformativo(request, ):
     total_animales = Animal.objects.count()
@@ -137,44 +368,6 @@ def usuario_login(request, usuario_id):
     usuario = get_object_or_404(Usuario, idusuario =usuario_id)
     
 
-# Listar fincas
-def listar_fincas(request):
-    fincas = Finca.objects.all()
-    return render(request, 'finca.html', {'fincas': fincas})
-
-# Crear finca
-def crear_finca(request):
-    if request.method == 'POST':
-        form = FincaForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_fincas')
-    else:
-        form = FincaForm()
-    return render(request, 'fincas/formulario.html', {'form': form, 'form_title': 'Nueva Finca'})
-
-# Editar finca
-def editar_finca(request, finca_id):
-    finca = get_object_or_404(Finca, idfinca=finca_id)
-    if request.method == 'POST':
-        form = FincaForm(request.POST, instance=finca)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_fincas')
-    else:
-        form = FincaForm(instance=finca)
-    return render(request, 'fincas/formulario.html', {'form': form, 'form_title': 'Editar Finca'})
-
-# Eliminar finca
-def eliminar_finca(request, finca_id):
-    finca = get_object_or_404(Finca, idfinca=finca_id)
-    if request.method == 'POST':
-        finca.delete()
-        return redirect('listar_fincas')
-    return render(request, 'fincas/confirmar_eliminar.html', {'finca': finca})
-
-
-
 
 # ============= VISTAS PARA FINCA =============
 
@@ -185,21 +378,24 @@ class FincaListView(LoginRequiredMixin, ListView):
     paginate_by = 12
     
     def get_queryset(self):
+        queryset = Finca.objects.all().prefetch_related('unidades_productivas')
         
-        queryset = Finca.objects.all().prefetch_related('potreros')
-        
-        search = self.request.GET.get('search', '').strip()
+        # Filtro por búsqueda
+        if 'search' in self.request.GET:
+            search = self.request.GET['search'].strip()
+            if search:
+                queryset = queryset.filter(Q(nombre__icontains=search) | Q(ubicacion__icontains=search))
+        else:
+            # Si no hay búsqueda, mostrar todas las fincas
+            queryset = Finca.objects.all().prefetch_related('unidades_productivas')  # También acá
 
-        if search:
-            queryset = queryset.filter(nombre__icontains=search,ubicacion__icontains=search)
-
-        
         # Filtro por estado
         estado = self.request.GET.get('estado')
         if estado:
             queryset = queryset.filter(estado=estado)
-        
+
         return queryset.order_by('-fecha_creacion')
+
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -208,8 +404,7 @@ class FincaListView(LoginRequiredMixin, ListView):
         context['fincas_activas'] = Finca.objects.filter(estado='activo').count()
         return context
 
-
-class FincaDetailView(LoginRequiredMixin, DetailView):
+class FincaDetailView(LoginRequiredMixin, DetailView):    
     model = Finca
     template_name = 'finca_detail.html'
     context_object_name = 'finca'
@@ -217,42 +412,39 @@ class FincaDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         finca = self.get_object()
-        
-        # Agregar estadísticas de potreros
-        context['total_potreros'] = finca.potreros.count()
-        context['potreros_disponibles'] = finca.potreros.filter(estado='disponible').count()
-        context['potreros_ocupados'] = finca.potreros.filter(estado='ocupado').count()
-        context['area_total_potreros'] = sum(p.area for p in finca.potreros.all())
-        
-        # Agregar animales si el modelo existe
-        if hasattr(finca, 'animales'):
-            context['total_animales'] = finca.animales.count()
-            context['animales_activos'] = finca.animales.filter(estado='activo').count()
-        
+        Propietario = finca.cedulapropietario # Asumiendo que cedulapropietario es una relación con el modelo Propietario
+        context['propietario'] = Propietario
+        context['cedulapropietario'] = Propietario.cedulapropietario if Propietario else 'No disponible'
+        context['tipo_documento'] = Propietario.tipodocumento if Propietario else 'No disponible'
+        context['Pnombre'] = Propietario.nombre if Propietario else 'No disponible'
+        context['Ptelefono'] = Propietario.telefono if Propietario else 'No disponible'
+        context['Pemail'] = Propietario.correo if Propietario else 'No disponible'
+        unidades = finca.unidades_productivas.all()
+
+        context['total_u_productiva'] = unidades.count()
+        context['u_productiva_disponibles'] = unidades.filter(estado='disponible').count()
+        context['u_productiva_ocupados'] = unidades.filter(estado='ocupado').count()
+        context['area_total_u_productiva'] = sum(p.area for p in unidades)
+
         return context
-
-
+    
 class FincaCreateView(LoginRequiredMixin, CreateView):
     model = Finca
     form_class = FincaForm
     template_name = 'finca_create.html'
-    success_url = reverse_lazy('finca_list')
+    success_url = reverse_lazy('finca_list')  # Asegúrate que esta URL exista
     
+    def form_invalid(self, form):
+        print("Errores del formulario:", form.errors)
+        return super().form_invalid(form)
     def form_valid(self, form):
-        messages.success(self.request, f'Finca "{form.instance.nombre}" creada exitosamente.')
+        print("Formulario válido. Guardando...")
         return super().form_valid(form)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Crear Nueva Finca'
-        context['submit_text'] = 'Crear Finca'
-        return context
-
 
 class FincaUpdateView(LoginRequiredMixin, UpdateView):
     model = Finca
     form_class = FincaForm
-    template_name = 'finca_form.html'
+    template_name = 'finca_edit.html'
     success_url = reverse_lazy('finca_list')
     
     def form_valid(self, form):
@@ -265,162 +457,231 @@ class FincaUpdateView(LoginRequiredMixin, UpdateView):
         context['submit_text'] = 'Actualizar Finca'
         return context
 
-
-class FincaDeleteView(LoginRequiredMixin, DeleteView):
-    model = Finca
-    template_name = 'finca_confirm_delete.html'
-    success_url = reverse_lazy('finca_list')
-    
-    def delete(self, request, *args, **kwargs):
-        finca = self.get_object()
+class FincaDeleteView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        finca_id = kwargs.get('pk')
+        finca = get_object_or_404(Finca, pk=finca_id)
+        finca.delete()
         messages.success(request, f'Finca "{finca.nombre}" eliminada exitosamente.')
-        return super().delete(request, *args, **kwargs)
+        return redirect('finca_list')
 
+# ============= VISTAS PARA UNIDAD PRODUCTIVA =============
 
-# ============= VISTAS PARA POTRERO =============
-
-class PotreroListView(LoginRequiredMixin, ListView):
-    model = Potrero
-    template_name = 'potreros/potrero_list.html'
-    context_object_name = 'potreros'
+class UnidadProductivaListView(LoginRequiredMixin, ListView):
+    model = UnidadProductiva
+    template_name = 'unidad_productiva_list.html'
+    context_object_name = 'unidades_productivas'
     paginate_by = 12
-    
+
     def get_queryset(self):
-        queryset = Potrero.objects.all().select_related('finca')
+        queryset = UnidadProductiva.objects.all().select_related('idfinca')
         
         # Filtro por búsqueda
         search = self.request.GET.get('search')
         if search:
             queryset = queryset.filter(
                 Q(nombre__icontains=search) |
-                Q(codigo__icontains=search) |
                 Q(finca__nombre__icontains=search)
             )
-        
+
         # Filtro por finca
-        finca_id = self.request.GET.get('finca')
+        finca_id = self.request.GET.get('idfinca')
         if finca_id:
             queryset = queryset.filter(finca_id=finca_id)
-        
+
         # Filtro por estado
         estado = self.request.GET.get('estado')
         if estado:
             queryset = queryset.filter(estado=estado)
+
+        # Filtro por tipo de unidad (si aplica)
+        tipo_unidad = self.request.GET.get('tipo_unidad')
+        if tipo_unidad:
+            queryset = queryset.filter(tipo_unidad=tipo_unidad)
         
-        # Filtro por tipo de pasto
-        tipo_pasto = self.request.GET.get('tipo_pasto')
-        if tipo_pasto:
-            queryset = queryset.filter(tipo_pasto=tipo_pasto)
-        
-        return queryset.order_by('-fecha_creacion')
+
+
+        return queryset.order_by('-idfinca')
     
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['fincas'] = Finca.objects.filter(estado='activo').order_by('nombre')
-        context['total_potreros'] = Potrero.objects.count()
-        context['potreros_disponibles'] = Potrero.objects.filter(estado='disponible').count()
-        context['potreros_ocupados'] = Potrero.objects.filter(estado='ocupado').count()
+        context['total_unidades'] = UnidadProductiva.objects.count()
+        context['unidades_disponibles'] = UnidadProductiva.objects.filter(estado='disponible').count()
+        context['unidades_ocupadas'] = UnidadProductiva.objects.filter(estado='ocupado').count()
         return context
 
 
-class PotreroDetailView(LoginRequiredMixin, DetailView):
-    model = Potrero
-    template_name = 'potreros/potrero_detail.html'
-    context_object_name = 'potrero'
-    
+class UnidadProductivaDetailView(LoginRequiredMixin, DetailView):
+    model = UnidadProductiva
+    template_name = 'unidad_productiva_detail.html'
+    context_object_name = 'unidad_productiva'
+
+    def unidad_productiva_detail(request, pk):
+        unidad_productiva = get_object_or_404(UnidadProductiva, pk=pk)
+        return render(request, 'unidad_productiva_detail.html', {
+            'unidad_productiva': unidad_productiva
+        })
+
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        potrero = self.get_object()
-        
-        # Agregar animales en el potrero si el modelo existe
-        if hasattr(potrero, 'animales'):
-            context['animales_en_potrero'] = potrero.animales.filter(estado='activo')
-            context['total_animales'] = potrero.animales.filter(estado='activo').count()
-        
-        # Calcular utilización del potrero
-        if potrero.capacidad_animales and hasattr(potrero, 'animales'):
-            animales_actuales = potrero.animales.filter(estado='activo').count()
-            context['porcentaje_ocupacion'] = (animales_actuales / potrero.capacidad_animales) * 100
-        
+        unidad = self.get_object()
+
+        # Agregar animales en la unidad si el modelo existe
+        if hasattr(unidad, 'animales'):
+            context['animales_en_unidad'] = unidad.animales.filter(estado='activo')
+            context['total_animales'] = unidad.animales.filter(estado='activo').count()
+
+        # Calcular utilización de la unidad
+        if unidad.capacidad_maxima and hasattr(unidad, 'animales'):
+            animales_actuales = unidad.animales.filter(estado='activo').count()
+            context['porcentaje_ocupacion'] = (animales_actuales / unidad.capacidad_maxima) * 100
+
         return context
+  
+class UnidadProductivaCreateView(LoginRequiredMixin, CreateView):
+    model = UnidadProductiva
+    form_class = UnidadProductivaForm
+    template_name = 'unidad_productiva_create.html'
+    success_url = reverse_lazy('UnidadProductiva_list')
 
-
-class PotreroCreateView(LoginRequiredMixin, CreateView):
-    model = Potrero
-    form_class = PotreroForm
-    template_name = 'potreros/potrero_form.html'
-    success_url = reverse_lazy('potrero_list')
-    
     def get_initial(self):
         initial = super().get_initial()
-        # Si se pasa finca como parámetro, pre-seleccionarla
-        finca_id = self.request.GET.get('finca')
+        finca_id = self.request.GET.get('idfinca')
         if finca_id:
             initial['finca'] = finca_id
         return initial
-    
+
     def form_valid(self, form):
-        messages.success(self.request, f'Potrero "{form.instance.nombre}" creado exitosamente.')
+        messages.success(self.request, f'Unidad Productiva "{form.instance.nombre}" creada exitosamente.')
         return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Crear Nuevo Potrero'
-        context['submit_text'] = 'Crear Potrero'
+        context['title'] = 'Crear Nueva Unidad Productiva'
+        context['submit_text'] = 'Crear Unidad Productiva'
         return context
 
+class UnidadProductivaUpdateView(LoginRequiredMixin, UpdateView):
+    model = UnidadProductiva
+    form_class = UnidadProductivaForm
+    template_name = 'unidad_productiva_edit.html'
+    success_url = reverse_lazy('UnidadProductiva_list')
 
-class PotreroUpdateView(LoginRequiredMixin, UpdateView):
-    model = Potrero
-    form_class = PotreroForm
-    template_name = 'potreros/potrero_form.html'
-    success_url = reverse_lazy('potrero_list')
-    
     def form_valid(self, form):
-        messages.success(self.request, f'Potrero "{form.instance.nombre}" actualizado exitosamente.')
+        messages.success(self.request, f'Unidad Productiva "{form.instance.nombre}" actualizada exitosamente.')
         return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = f'Editar Potrero: {self.object.nombre}'
-        context['submit_text'] = 'Actualizar Potrero'
+        context['title'] = f'Editar Unidad Productiva: {self.object.nombre}'
+        context['submit_text'] = 'Actualizar Unidad Productiva'
         return context
 
+class UnidadProductivaDeleteView(LoginRequiredMixin, DeleteView):
+    model = UnidadProductiva
+    success_url = reverse_lazy('UnidadProductiva_list')
 
-class PotreroDeleteView(LoginRequiredMixin, DeleteView):
-    model = Potrero
-    template_name = 'potreros/potrero_confirm_delete.html'
-    success_url = reverse_lazy('potrero_list')
-    
     def delete(self, request, *args, **kwargs):
-        potrero = self.get_object()
-        messages.success(request, f'Potrero "{potrero.nombre}" eliminado exitosamente.')
+        unidadp = kwargs.get('pk')
+        unidadProductiva = get_object_or_404(UnidadProductiva, pk=unidadp)
+        unidadProductiva.delete()
+        unidad = self.get_object()
+        messages.success(request, f'Unidad Productiva "{unidad.nombre}" eliminada exitosamente.')
         return super().delete(request, *args, **kwargs)
-
-
-# ============= VISTAS AJAX/API =============
-
-def potrero_by_finca_ajax(request):
-    """Vista AJAX para obtener potreros por finca"""
-    finca_id = request.GET.get('finca_id')
-    potreros = Potrero.objects.filter(finca_id=finca_id, estado='disponible').values('id', 'nombre')
-    return JsonResponse(list(potreros), safe=False)
-
-
-def finca_estadisticas_ajax(request, finca_id):
-    """Vista AJAX para obtener estadísticas de una finca"""
-    finca = get_object_or_404(Finca, id=finca_id)
     
-    data = {
-        'total_potreros': finca.potreros.count(),
-        'potreros_disponibles': finca.potreros.filter(estado='disponible').count(),
-        'potreros_ocupados': finca.potreros.filter(estado='ocupado').count(),
-        'area_total': float(finca.area_total),
-        'area_potreros': sum(float(p.area) for p in finca.potreros.all()),
-    }
+
     
-    # Agregar datos de animales si existe el modelo
-    if hasattr(finca, 'animales'):
-        data['total_animales'] = finca.animales.filter(estado='activo').count()
-    
-    return JsonResponse(data)
+# ============= VISTAS PARA ANIMAL =============
+
+class AnimalListView(LoginRequiredMixin, ListView):
+    model = Animal
+    template_name = 'animal_list.html'
+    context_object_name = 'animales'
+    paginate_by = 12
+            
+    def get_queryset(self):
+        queryset = Animal.objects.select_related('idunidad', 'idmadre', 'idpadre')
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(especie__icontains=search) |
+                Q(raza__icontains=search) |
+                Q(sexo__icontains=search) |
+                Q(idunidad__nombre__icontains=search)
+            )
+        estado = self.request.GET.get('estado')
+        if estado:
+            queryset = queryset.filter(estado=estado)
+        return queryset.order_by('-idanimal')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_animales'] = Animal.objects.count()
+        context['animales_activos'] = Animal.objects.filter(estado='activo').count()
+        context['animales_inactivos'] = Animal.objects.exclude(estado='activo').count()
+        return context
+
+class AnimalDetailView(LoginRequiredMixin, DetailView):
+    model = Animal
+    template_name = 'animal_detail.html'
+    context_object_name = 'animal'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        animal = self.get_object()
+        context['unidad'] = animal.idunidad
+        context['madre'] = animal.idmadre
+        context['padre'] = animal.idpadre
+        return context
+class AnimalCreateView(LoginRequiredMixin, CreateView):
+    model = Animal
+    fields = ['idunidad', 'especie', 'raza', 'sexo', 'peso', 'fechanacimiento', 'idmadre', 'idpadre', 'imagen', 'estado']
+    template_name = 'animal_create.html'
+    success_url = reverse_lazy('animal_list')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        unidad_id = self.request.GET.get('idunidad') or self.request.GET.get('UnidadProductiva')
+        if unidad_id:
+            initial['idunidad'] = unidad_id
+        return initial
+
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Animal creado exitosamente.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Registrar Nuevo Animal'
+        context['submit_text'] = 'Registrar Animal'
+        return context
+
+class AnimalUpdateView(LoginRequiredMixin, UpdateView):
+    model = Animal
+    fields = ['idunidad', 'especie', 'raza', 'sexo', 'peso', 'fechanacimiento', 'idmadre', 'idpadre', 'imagen', 'estado']
+    template_name = 'animal_edit.html'
+    success_url = reverse_lazy('animal_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, f'Animal actualizado exitosamente.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Editar Animal: {self.object.idanimal}'
+        context['submit_text'] = 'Actualizar Animal'
+        return context
+
+class AnimalDeleteView(LoginRequiredMixin, DeleteView):
+    model = Animal
+    template_name = 'animal_confirm_delete.html'
+    success_url = reverse_lazy('animal_list')
+
+    def delete(self, request, *args, **kwargs):
+        animal = self.get_object()
+        messages.success(request, f'Animal eliminado exitosamente.')
+        return super().delete(request, *args, **kwargs)

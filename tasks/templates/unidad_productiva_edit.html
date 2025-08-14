@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Unidad Productiva - Ganadek{% endblock %}
+
+{% block breadcrumb %}
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="flex-shrink-0">
+    <a href="/UnidadProductiva" class="hover:text-green-600 transition-colors">Unidad Productiva</a>
+</li>
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="text-emerald-600 font-medium">{{ unidad_productiva.nombre }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-6">
+            <div class="flex items-center">
+                <i class="fas fa-edit text-white text-3xl mr-4"></i>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Editar Unidad Productiva</h2>
+                    <p class="text-green-100">Actualiza los datos de la unidad productiva</p>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" class="p-8">
+            {% csrf_token %}
+            
+            <!-- Información Básica -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                    Información Básica
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="{{ form.idunidad.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-hashtag text-gray-400 mr-1"></i>
+                            ID Unidad
+                        </label>
+                        {{ form.idunidad }}
+                        {% if form.idunidad.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.idunidad.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.idfinca.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-home text-gray-400 mr-1"></i>
+                            Finca *
+                        </label>
+                        <select name="idfinca" id="{{ form.idfinca.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" required>
+                            <option value="">Seleccione una finca</option>
+                            {% for finca in form.idfinca.field.queryset %}
+                                <option value="{{ finca.pk }}" {% if form.idfinca.value == finca.pk %}selected{% endif %}>
+                                    {{ finca.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.idfinca.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.idfinca.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.nombre.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-tag text-gray-400 mr-1"></i>
+                            Nombre *
+                        </label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.nombre.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.tipounidad.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-cubes text-gray-400 mr-1"></i>
+                            Tipo de Unidad *
+                        </label>
+                        <select name="tipounidad" id="{{ form.tipounidad.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" required>
+                  
+                            <option value="Galpon" {% if form.tipounidad.value == 'Galpon' %}selected{% endif %}>Galpón</option>
+                            <option value="Jaula" {% if form.tipounidad.value == 'Jaula' %}selected{% endif %}>Jaula</option>
+                            <option value="Potrero" {% if form.tipounidad.value == 'Potrero' %}selected{% endif %}>Potrero</option>
+                        </select>
+                        {% if form.tipounidad.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.tipounidad.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.especie_destinada.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-paw text-gray-400 mr-1"></i>
+                            Especie Destinada *
+                        </label>
+                        {{ form.especie_destinada }}
+                        {% if form.especie_destinada.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.especie_destinada.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.estado.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-check-circle text-gray-400 mr-1"></i>
+                            Estado *
+                        </label>
+                        <select name="estado" id="{{ form.estado.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" required>
+                            <option value="Disponible" {% if form.estado.value == 'disponible' %}selected{% endif %}>Disponible</option>
+                            <option value="Ocupado" {% if form.estado.value == 'ocupado' %}selected{% endif %}>Ocupado</option>
+                        </select>
+                        {% if form.estado.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.estado.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Características Físicas (Todos los tipos) -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-ruler-combined text-purple-500 mr-2"></i>
+                    Características Físicas
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="{{ form.area.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-expand-arrows-alt text-gray-400 mr-1"></i>
+                            Área (ha) *
+                        </label>
+                        {{ form.area }}
+                        {% if form.area.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.area.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.capacidad_maxima.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-users text-gray-400 mr-1"></i>
+                            Capacidad Máxima
+                        </label>
+                        {{ form.capacidad_maxima }}
+                        {% if form.capacidad_maxima.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.capacidad_maxima.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group md:col-span-2">
+                        <label for="{{ form.descripcion.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-align-left text-gray-400 mr-1"></i>
+                            Descripción
+                        </label>
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.descripcion.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campos específicos para Galpones y Jaulas -->
+            <div id="campos-galpon-jaula" class="mb-8" style="display: none;">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-building text-orange-500 mr-2"></i>
+                    Características de Construcción
+                    <span class="text-sm font-normal text-gray-500 ml-2">(Solo para Galpones y Jaulas)</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="{{ form.tipoconstruccion.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-building text-gray-400 mr-1"></i>
+                            Tipo de Construcción
+                        </label>
+                        {{ form.tipoconstruccion }}
+                        {% if form.tipoconstruccion.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.tipoconstruccion.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.sistemaventilacion.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-fan text-gray-400 mr-1"></i>
+                            Sistema de Ventilación
+                        </label>
+                        {{ form.sistemaventilacion }}
+                        {% if form.sistemaventilacion.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.sistemaventilacion.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.sistemaalimentacion.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-utensils text-gray-400 mr-1"></i>
+                            Sistema de Alimentación
+                        </label>
+                        {{ form.sistemaalimentacion }}
+                        {% if form.sistemaalimentacion.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.sistemaalimentacion.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.temperaturacontrolada.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-thermometer-half text-gray-400 mr-1"></i>
+                            Temperatura Controlada
+                        </label>
+                        <select name="temperaturacontrolada" id="{{ form.temperaturacontrolada.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Sin especificar</option>
+                            <option value="1" {% if form.temperaturacontrolada.value == 1 or form.temperaturacontrolada.value == '1' %}selected{% endif %}>Sí</option>
+                            <option value="0" {% if form.temperaturacontrolada.value == 0 or form.temperaturacontrolada.value == '0' %}selected{% endif %}>No</option>
+                        </select>
+                        {% if form.temperaturacontrolada.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.temperaturacontrolada.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.iluminacion.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-lightbulb text-gray-400 mr-1"></i>
+                            Iluminación
+                        </label>
+                        <select name="iluminacion" id="{{ form.iluminacion.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Sin especificar</option>
+                            <option value="1" {% if form.iluminacion.value == 1 or form.iluminacion.value == '1' %}selected{% endif %}>Sí</option>
+                            <option value="0" {% if form.iluminacion.value == 0 or form.iluminacion.value == '0' %}selected{% endif %}>No</option>
+                        </select>
+                        {% if form.iluminacion.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.iluminacion.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campos específicos para Potreros -->
+            <div id="campos-potrero" class="mb-8" style="display: none;">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-seedling text-green-500 mr-2"></i>
+                    Características del Potrero
+                    <span class="text-sm font-normal text-gray-500 ml-2">(Solo para Potreros)</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="{{ form.fuenteagua.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-tint text-gray-400 mr-1"></i>
+                            Fuente de Agua
+                        </label>
+                        {{ form.fuenteagua }}
+                        {% if form.fuenteagua.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.fuenteagua.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.tipopasto.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-grass text-gray-400 mr-1"></i>
+                            Tipo de Pasto
+                        </label>
+                        {{ form.tipopasto }}
+                        {% if form.tipopasto.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.tipopasto.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
+                <a href="{% url 'UnidadProductiva_list' %}" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200 flex items-center justify-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Cancelar
+                </a>
+                <button type="submit" class="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition duration-200 flex items-center justify-center shadow-lg">
+                    <i class="fas fa-save mr-2"></i>
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoUnidadField = document.querySelector('#{{ form.tipounidad.id_for_label }}');
+    const camposGalponJaula = document.getElementById('campos-galpon-jaula');
+    const camposPotrero = document.getElementById('campos-potrero');
+    
+    function toggleFields() {
+        const tipoValue = tipoUnidadField.value.toLowerCase().trim();
+        
+        // Ocultar todas las secciones primero
+        camposGalponJaula.style.display = 'none';
+        camposPotrero.style.display = 'none';
+        
+        // Mostrar campos según el tipo
+        if (tipoValue === 'galpon' || tipoValue === 'galpón' || tipoValue === 'jaula') {
+            camposGalponJaula.style.display = 'block';
+            
+        } else if (tipoValue === 'potrero') {
+            camposPotrero.style.display = 'block';
+        }
+    }
+    
+    // Ejecutar al cargar la página para mostrar campos según valor actual
+    toggleFields();
+    
+    // Ejecutar cuando cambie el tipo de unidad
+    tipoUnidadField.addEventListener('change', toggleFields);
+    tipoUnidadField.addEventListener('input', toggleFields);
+});
+</script>
+
+<style>
+.form-group input, .form-group select, .form-group textarea {
+    transition: all 0.2s ease-in-out;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+#campos-galpon-jaula, #campos-potrero {
+    transition: all 0.3s ease-in-out;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}
+</style>
+{% endblock %}

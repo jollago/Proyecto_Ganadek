@@ -16,20 +16,28 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from tasks import views
+from tasks import views 
+from django.contrib.auth import views as auth_views
+from django.urls import path
 
 
 
 
 urlpatterns = [
+    
+    path('signin/', views.signin ,name='signin'),
+    
+    
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('signup/', views.signup ,name='signup'),
     path('Panel Informativo/', views.PanelInformativo ,name='PanelInformativo'),
     path('profile/', views.profile ,name='profile'),
+    path('profile/gestion_usuarios/', views.gestion_usuarios, name='gestion_usuarios'),
     path('password-change/', views.password_change, name='password_change'),
     path('logout/', views.signout ,name='logout'),
-    path('signin/', views.signin ,name='signin'),
+    
+
     
     # Lista de fincas
     path('Fincas/', views.FincaListView.as_view(), name='finca_list'),
@@ -44,67 +52,40 @@ urlpatterns = [
     path('Fincas/<int:pk>/editar/', views.FincaUpdateView.as_view(), name='finca_edit'),
     
     # Eliminar finca
-    path('Fincas/<int:pk>/eliminar/', views.FincaDeleteView.as_view(), name='finca_delete'),
+    path('Fincas/eliminar/<int:pk>/', views.FincaDeleteView.as_view(), name='finca_delete'),
     
     
     # ============= URLs PARA POTREROS =============
     
     # Lista de potreros
-    path('potreros/', views.PotreroListView.as_view(), name='potrero_list'),
+    path('UnidadProductiva/', views.UnidadProductivaListView.as_view(), name='UnidadProductiva_list'),
     
     # Detalle de potrero
-    path('potreros/<int:pk>/', views.PotreroDetailView.as_view(), name='potrero_detail'),
+    path('UnidadProductiva/<int:pk>/', views.UnidadProductivaDetailView.as_view(), name='UnidadProductiva_detail'),
     
     # Crear potrero
-    path('potreros/crear/', views.PotreroCreateView.as_view(), name='potrero_create'),
+    path('UnidadProductiva/crear/', views.UnidadProductivaCreateView.as_view(), name='UnidadProductiva_create'),
     
     # Editar potrero
-    path('potreros/<int:pk>/editar/', views.PotreroUpdateView.as_view(), name='potrero_edit'),
+    path('UnidadProductiva/<int:pk>/editar/', views.UnidadProductivaUpdateView.as_view(), name='UnidadProductiva_edit'),
     
     # Eliminar potrero
-    path('potreros/<int:pk>/eliminar/', views.PotreroDeleteView.as_view(), name='potrero_delete'),
+    path('UnidadProductiva/<int:pk>/eliminar/', views.UnidadProductivaDeleteView.as_view(), name='UnidadProductiva_delete'),
     
-    
-    # ============= URLs AJAX/API =============
-    
-    # Obtener potreros por finca (AJAX)
-    path('ajax/potreros-por-finca/', views.potrero_by_finca_ajax, name='potrero_by_finca_ajax'),
-    
-    # Estadísticas de finca (AJAX)
-    path('ajax/finca/<int:finca_id>/estadisticas/', views.finca_estadisticas_ajax, name='finca_estadisticas_ajax'),
+    # ============= URLs PARA ANIMALES =============
+
+    # Lista de animales
+    path('Animal/', views.AnimalListView.as_view(), name='animal_list'),
+
+    # Detalle de animal
+    path('Animal/<int:pk>/', views.AnimalDetailView.as_view(), name='animal_detail'),
+
+    # Crear animal
+    path('Animal/crear/', views.AnimalCreateView.as_view(), name='animal_create'),
+
+    # Editar animal
+    path('Animal/<int:pk>/editar/', views.AnimalUpdateView.as_view(), name='animal_edit'),
+
+    # Eliminar animal
+    path('Animal/<int:pk>/eliminar/', views.AnimalDeleteView.as_view(), name='animal_delete'),
 ]
-
-# URLs alternativas más específicas si necesitas organizar mejor tu aplicación
-app_name = 'ganaderia'  # Namespace para las URLs
-
-# Si prefieres un enfoque más organizado, puedes usar:
-"""
-urlpatterns = [
-    # Fincas
-    path('', views.FincaListView.as_view(), name='finca_list'),  # Página principal
-    path('finca/', include([
-        path('', views.FincaListView.as_view(), name='finca_list'),
-        path('nueva/', views.FincaCreateView.as_view(), name='finca_create'),
-        path('<int:pk>/', views.FincaDetailView.as_view(), name='finca_detail'),
-        path('<int:pk>/editar/', views.FincaUpdateView.as_view(), name='finca_edit'),
-        path('<int:pk>/eliminar/', views.FincaDeleteView.as_view(), name='finca_delete'),
-    ])),
-    
-    # Potreros
-    path('potrero/', include([
-        path('', views.PotreroListView.as_view(), name='potrero_list'),
-        path('nuevo/', views.PotreroCreateView.as_view(), name='potrero_create'),
-        path('<int:pk>/', views.PotreroDetailView.as_view(), name='potrero_detail'),
-        path('<int:pk>/editar/', views.PotreroUpdateView.as_view(), name='potrero_edit'),
-        path('<int:pk>/eliminar/', views.PotreroDeleteView.as_view(), name='potrero_delete'),
-    ])),
-    
-    # AJAX
-    path('ajax/', include([
-        path('potreros-por-finca/', views.potrero_by_finca_ajax, name='potrero_by_finca_ajax'),
-        path('finca/<int:finca_id>/estadisticas/', views.finca_estadisticas_ajax, name='finca_estadisticas_ajax'),
-    ])),
-]
-"""
-
- 

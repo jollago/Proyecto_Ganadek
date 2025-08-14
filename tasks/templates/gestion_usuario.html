@@ -4,16 +4,18 @@
 
 {% block breadcrumb %}
 <li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
-<li><a href="/dashboard" class="text-gray-500 hover:text-gray-700">Dashboard</a></li>
+<li><a href="/profile" class="text-gray-500 hover:text-gray-700">Mi Perfil</a></li>
 <li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
 <li class="text-emerald-600 font-medium">Gestión de Usuarios</li>
 {% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50 p-6">
+   
+
     <!-- Header de la página -->
     <div class="mb-8">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-12 space-y-4 sm:space-y-0">
             <div class="flex items-center space-x-4">
                 <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-3 rounded-xl shadow-lg">
                     <i class="fas fa-users text-white text-2xl"></i>
@@ -24,11 +26,13 @@
                 </div>
             </div>
             <div class="flex items-center space-x-3">
-                <button onclick="exportUsers()" class="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 shadow-sm hover:shadow-md transition-all duration-200 flex items-center">
+                <button onclick="exportUsers()"
+                    class="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 shadow-sm hover:shadow-md transition-all duration-200 flex items-center">
                     <i class="fas fa-download mr-2"></i>
                     Exportar
                 </button>
-                <button onclick="openCreateModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center">
+                <button onclick="openCreateModal()"
+                    class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center">
                     <i class="fas fa-plus mr-2"></i>
                     Nuevo Usuario
                 </button>
@@ -44,20 +48,22 @@
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
                 </div>
-                <input type="text" id="searchInput" placeholder="Buscar usuarios..." 
-                       class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                       onkeyup="filterUsers()">
+                <input type="text" id="searchInput" placeholder="Buscar usuarios..."
+                    class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                    onkeyup="filterUsers()">
             </div>
 
             <!-- Filtros -->
             <div class="flex space-x-4">
-                <select id="roleFilter" onchange="filterUsers()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                <select id="roleFilter" onchange="filterUsers()"
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
                     <option value="">Todos los roles</option>
                     <option value="admin">Administrador</option>
-                    <option value="manager">Gerente</option>
+                    <option value="staff">Staff</option>
                     <option value="user">Usuario</option>
                 </select>
-                <select id="statusFilter" onchange="filterUsers()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                <select id="statusFilter" onchange="filterUsers()"
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
                     <option value="">Todos los estados</option>
                     <option value="active">Activo</option>
                     <option value="inactive">Inactivo</option>
@@ -72,7 +78,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 font-medium">Total Usuarios</p>
-                    <p class="text-2xl font-bold text-gray-900" id="totalUsers">0</p>
+                    <p class="text-2xl font-bold text-gray-900" id="totalUsers">{{ usuarios|length }}</p>
                 </div>
                 <div class="bg-blue-100 p-3 rounded-full">
                     <i class="fas fa-users text-blue-600"></i>
@@ -119,24 +125,104 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-900">Lista de Usuarios</h2>
         </div>
-        
+
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correo</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Último acceso</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                            Usuario</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Correo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Rol</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Estado</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Último acceso</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="usersTable" class="bg-white divide-y divide-gray-200">
-                    <!-- Los usuarios se cargarán aquí dinámicamente -->
+                    {% for user in usuarios %}
+                    <tr class="hover:bg-gray-50 transition-colors" data-user-id="{{ user.id }}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <div class="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
+                                        <span class="text-white font-medium text-sm">{{ user.username|slice:":1"|upper }}</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ user.username }}</div>
+                                    <div class="text-sm text-gray-500">{{ user.first_name }} {{ user.last_name }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ user.email }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                {% if user.is_superuser %}
+                                <i class="fas fa-user-shield mr-1"></i> Superusuario
+                                {% elif user.is_staff %}
+                                <i class="fas fa-user-tie mr-1"></i> Staff
+                                {% else %}
+                                <i class="fas fa-user mr-1"></i> Usuario
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if user.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                <i class="fas fa-circle mr-1"></i> {{ user.is_active|yesno:"Activo,Inactivo" }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ user.last_login|date:"d M Y"|default:"Nunca" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button onclick="editUser({{ user.id }})" title="Editar usuario"
+                                    class="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-50">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {% if user.id != request.user.id %}
+                                <form method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de cambiar el estado de este usuario?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="toggle_status">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit" title="Cambiar estado"
+                                        class="text-yellow-600 hover:text-yellow-800 transition-colors p-1 rounded hover:bg-yellow-50">
+                                        <i class="fas fa-toggle-{{ user.is_active|yesno:'on,off' }}"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de eliminar este usuario? Esta acción no se puede deshacer.')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit" title="Eliminar usuario"
+                                        class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                {% else %}
+                                <button title="No puedes modificar tu propio usuario" disabled
+                                    class="text-gray-400 cursor-not-allowed p-1 rounded">
+                                    <i class="fas fa-lock"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                            No hay usuarios registrados
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -145,15 +231,8 @@
         <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
             <div class="flex items-center justify-between">
                 <div class="text-sm text-gray-700">
-                    Mostrando <span id="showingStart">1</span> a <span id="showingEnd">10</span> de <span id="totalCount">0</span> usuarios
-                </div>
-                <div class="flex space-x-2">
-                    <button onclick="previousPage()" class="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button onclick="nextPage()" class="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+                    Mostrando <span id="showingStart">1</span> a <span id="showingEnd">{{ usuarios|length }}</span> de
+                    <span id="totalCount">{{ usuarios|length }}</span> usuarios
                 </div>
             </div>
         </div>
@@ -170,43 +249,92 @@
                     <button onclick="closeModal()" class="text-white hover:text-gray-200 transition-colors">
                         <i class="fas fa-times text-xl"></i>
                     </button>
+                    
                 </div>
             </div>
-            
-            <form id="userForm" class="p-6 space-y-4">
+
+            <form id="userForm" method="POST" action="{% url 'gestion_usuarios' %}" class="p-6 space-y-4">
+                {% csrf_token %}
+                {% if form.errors %}
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        showModal();  // Esto abrirá el modal automáticamente
+                    });
+                </script>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                    <strong class="font-bold">Error:</strong>
+                    <ul class="mt-2 list-disc list-inside text-sm">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+
+                <input type="hidden" id="userId" name="user_id" value="">
+                <input type="hidden" id="action" name="action" value="create">
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="id_username" class="block text-sm font-medium text-gray-700 mb-2">
                             <i class="fas fa-user mr-1 text-emerald-600"></i>
                             Nombre de Usuario
                         </label>
-                        <input type="text" id="username" name="username" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                               placeholder="Nombre de usuario">
+                        <input type="text" name="username" id="id_username" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                            placeholder="Nombre de usuario">
                     </div>
+
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="id_email" class="block text-sm font-medium text-gray-700 mb-2">
                             <i class="fas fa-envelope mr-1 text-emerald-600"></i>
                             Correo Electrónico
                         </label>
-                        <input type="email" id="email" name="email" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                               placeholder="correo@ejemplo.com">
+                        <input type="email" name="email" id="id_email" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                            placeholder="correo@ejemplo.com">
                     </div>
                 </div>
-                
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="id_first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-id-card mr-1 text-emerald-600"></i>
+                            Nombre
+                        </label>
+                        <input type="text" name="first_name" id="id_first_name"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                            placeholder="Juan">
+                    </div>
+
+                    <div>
+                        <label for="id_last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-id-card mr-1 text-emerald-600"></i>
+                            Apellido
+                        </label>
+                        <input type="text" name="last_name" id="id_last_name"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                            placeholder="Arrieta">
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             <i class="fas fa-user-tag mr-1 text-emerald-600"></i>
                             Rol
                         </label>
-                        <select id="role" name="role" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200">
-                            <option value="">Seleccionar rol</option>
-                            <option value="admin">Administrador</option>
-                            <option value="manager">Gerente</option>
+                        <select name="role" id="roleSelect"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="user">Usuario</option>
+                            <option value="staff">Staff</option>
+                            <option value="admin">Administrador</option>
                         </select>
                     </div>
                     <div>
@@ -214,46 +342,46 @@
                             <i class="fas fa-toggle-on mr-1 text-emerald-600"></i>
                             Estado
                         </label>
-                        <select id="status" name="status" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200">
+                        <select name="status" id="statusSelect"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="active">Activo</option>
                             <option value="inactive">Inactivo</option>
                         </select>
                     </div>
                 </div>
-                
+
                 <div id="passwordSection">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="id_password1" class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-lock mr-1 text-emerald-600"></i>
                                 Contraseña
                             </label>
-                            <input type="password" id="password" name="password"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                                   placeholder="Contraseña">
+                            <input type="password" name="password1" id="id_password1"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                placeholder="Contraseña">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="id_password2" class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-lock mr-1 text-emerald-600"></i>
                                 Confirmar Contraseña
                             </label>
-                            <input type="password" id="confirmPassword" name="confirmPassword"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                                   placeholder="Confirmar contraseña">
+                            <input type="password" name="password2" id="id_password2"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                placeholder="Confirmar contraseña">
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-end space-x-3 pt-4">
-                    <button type="button" onclick="closeModal()" 
-                            class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                    <button type="button" onclick="closeModal()"
+                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
                         Cancelar
                     </button>
-                    <button type="submit" 
-                            class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105">
+                    <button type="submit"
+                        class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105">
                         <i class="fas fa-save mr-2"></i>
-                        Guardar Usuario
+                        <span id="submitButtonText">Guardar Usuario</span>
                     </button>
                 </div>
             </form>
@@ -262,341 +390,246 @@
 </div>
 
 <script>
-// Datos de ejemplo (en producción vendría de la base de datos)
-let users = [
-    { id: 1, username: 'admin', email: 'admin@ganadek.com', role: 'admin', status: 'active', lastAccess: '2024-07-03' },
-    { id: 2, username: 'jperez', email: 'juan.perez@ganadek.com', role: 'manager', status: 'active', lastAccess: '2024-07-02' },
-    { id: 3, username: 'mgomez', email: 'maria.gomez@ganadek.com', role: 'user', status: 'active', lastAccess: '2024-07-01' },
-    { id: 4, username: 'lrodriguez', email: 'luis.rodriguez@ganadek.com', role: 'user', status: 'inactive', lastAccess: '2024-06-28' },
-    { id: 5, username: 'amartinez', email: 'ana.martinez@ganadek.com', role: 'manager', status: 'active', lastAccess: '2024-07-03' }
-];
+    // Variables globales
+    let editingUserId = null;
 
-let currentPage = 1;
-const usersPerPage = 10;
-let filteredUsers = [...users];
-let editingUserId = null;
-
-// Inicializar página
-document.addEventListener('DOMContentLoaded', function() {
-    loadUsers();
-    updateStats();
-    
-    // Configurar formulario
-    document.getElementById('userForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveUser();
-    });
-    
-    console.log('Gestión de usuarios de Ganadek cargada');
-});
-
-// Cargar usuarios en la tabla
-function loadUsers() {
-    const tableBody = document.getElementById('usersTable');
-    tableBody.innerHTML = '';
-    
-    const start = (currentPage - 1) * usersPerPage;
-    const end = start + usersPerPage;
-    const pageUsers = filteredUsers.slice(start, end);
-    
-    pageUsers.forEach(user => {
-        const row = createUserRow(user);
-        tableBody.appendChild(row);
-    });
-    
-    updatePagination();
-}
-
-// Crear fila de usuario
-function createUserRow(user) {
-    const row = document.createElement('tr');
-    row.className = 'hover:bg-gray-50 transition-colors';
-    row.innerHTML = `
-        <td class="px-6 py-4 whitespace-nowrap">
-            <input type="checkbox" class="user-checkbox rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" value="${user.id}">
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 h-10 w-10">
-                    <div class="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
-                        <span class="text-white font-medium text-sm">${user.username.charAt(0).toUpperCase()}</span>
-                    </div>
-                </div>
-                <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">${user.username}</div>
-                    <div class="text-sm text-gray-500">ID: ${user.id}</div>
-                </div>
-            </div>
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm text-gray-900">${user.email}</div>
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeClass(user.role)}">
-                <i class="${getRoleIcon(user.role)} mr-1"></i>
-                ${getRoleLabel(user.role)}
-            </span>
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(user.status)}">
-                <i class="${getStatusIcon(user.status)} mr-1"></i>
-                ${user.status === 'active' ? 'Activo' : 'Inactivo'}
-            </span>
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            ${formatDate(user.lastAccess)}
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-            <div class="flex space-x-2">
-                <button onclick="editUser(${user.id})" class="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-50" title="Editar">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button onclick="toggleUserStatus(${user.id})" class="text-yellow-600 hover:text-yellow-800 transition-colors p-1 rounded hover:bg-yellow-50" title="Cambiar estado">
-                    <i class="fas fa-toggle-on"></i>
-                </button>
-                <button onclick="deleteUser(${user.id})" class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50" title="Eliminar">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </td>
-    `;
-    return row;
-}
-
-// Funciones auxiliares para estilos
-function getRoleBadgeClass(role) {
-    const classes = {
-        'admin': 'bg-purple-100 text-purple-800',
-        'manager': 'bg-blue-100 text-blue-800',
-        'user': 'bg-green-100 text-green-800'
-    };
-    return classes[role] || 'bg-gray-100 text-gray-800';
-}
-
-function getRoleIcon(role) {
-    const icons = {
-        'admin': 'fas fa-user-shield',
-        'manager': 'fas fa-user-tie',
-        'user': 'fas fa-user'
-    };
-    return icons[role] || 'fas fa-user';
-}
-
-function getRoleLabel(role) {
-    const labels = {
-        'admin': 'Administrador',
-        'manager': 'Gerente',
-        'user': 'Usuario'
-    };
-    return labels[role] || 'Usuario';
-}
-
-function getStatusBadgeClass(status) {
-    return status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-}
-
-function getStatusIcon(status) {
-    return status === 'active' ? 'fas fa-circle' : 'fas fa-circle';
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-    });
-}
-
-// Funciones de gestión de usuarios
-function openCreateModal() {
-    editingUserId = null;
-    document.getElementById('modalTitle').textContent = 'Nuevo Usuario';
-    document.getElementById('userForm').reset();
-    document.getElementById('passwordSection').style.display = 'block';
-    document.getElementById('password').required = true;
-    document.getElementById('confirmPassword').required = true;
-    showModal();
-}
-
-function editUser(id) {
-    const user = users.find(u => u.id === id);
-    if (!user) return;
-    
-    editingUserId = id;
-    document.getElementById('modalTitle').textContent = 'Editar Usuario';
-    document.getElementById('username').value = user.username;
-    document.getElementById('email').value = user.email;
-    document.getElementById('role').value = user.role;
-    document.getElementById('status').value = user.status;
-    document.getElementById('passwordSection').style.display = 'none';
-    document.getElementById('password').required = false;
-    document.getElementById('confirmPassword').required = false;
-    showModal();
-}
-
-function saveUser() {
-    const formData = new FormData(document.getElementById('userForm'));
-    const userData = {
-        username: formData.get('username'),
-        email: formData.get('email'),
-        role: formData.get('role'),
-        status: formData.get('status'),
-        password: formData.get('password'),
-        confirmPassword: formData.get('confirmPassword')
-    };
-    
-    // Validaciones
-    if (!userData.username || !userData.email || !userData.role || !userData.status) {
-        alert('Por favor, complete todos los campos obligatorios.');
-        return;
-    }
-    
-    if (editingUserId === null && userData.password !== userData.confirmPassword) {
-        alert('Las contraseñas no coinciden.');
-        return;
-    }
-    
-    if (editingUserId === null) {
-        // Crear nuevo usuario
-        const newUser = {
-            id: Math.max(...users.map(u => u.id)) + 1,
-            username: userData.username,
-            email: userData.email,
-            role: userData.role,
-            status: userData.status,
-            lastAccess: new Date().toISOString().split('T')[0]
-        };
-        users.push(newUser);
-    } else {
-        // Editar usuario existente
-        const userIndex = users.findIndex(u => u.id === editingUserId);
-        if (userIndex !== -1) {
-            users[userIndex] = {
-                ...users[userIndex],
-                username: userData.username,
-                email: userData.email,
-                role: userData.role,
-                status: userData.status
-            };
-        }
-    }
-    
-    filterUsers();
-    updateStats();
-    closeModal();
-    
-    // Mostrar notificación de éxito
-    showNotification('Usuario guardado correctamente', 'success');
-}
-
-function toggleUserStatus(id) {
-    const user = users.find(u => u.id === id);
-    if (user) {
-        user.status = user.status === 'active' ? 'inactive' : 'active';
-        filterUsers();
+    // Inicializar la página
+    document.addEventListener("DOMContentLoaded", function () {
         updateStats();
-        showNotification('Estado del usuario actualizado', 'success');
-    }
-}
+    });
 
-function deleteUser(id) {
-    if (confirm('¿Está seguro de que desea eliminar este usuario?')) {
-        users = users.filter(u => u.id !== id);
-        filterUsers();
-        updateStats();
-        showNotification('Usuario eliminado correctamente', 'success');
-    }
-}
+    // Función para abrir modal de crear usuario
+    function openCreateModal() {
+        editingUserId = null;
+        document.getElementById('modalTitle').textContent = 'Nuevo Usuario';
+        document.getElementById('submitButtonText').textContent = 'Guardar Usuario';
+        document.getElementById('userForm').reset();
+        document.getElementById('userId').value = '';
+        document.getElementById('action').value = 'create';
 
-// Funciones de filtrado
-function filterUsers() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const roleFilter = document.getElementById('roleFilter').value;
-    const statusFilter = document.getElementById('statusFilter').value;
-    
-    filteredUsers = users.filter(user => {
-        const matchesSearch = user.username.toLowerCase().includes(search) || 
-                             user.email.toLowerCase().includes(search);
-        const matchesRole = !roleFilter || user.role === roleFilter;
-        const matchesStatus = !statusFilter || user.status === statusFilter;
+        // Hacer los campos de contraseña requeridos
+        document.getElementById('id_password1').required = true;
+        document.getElementById('id_password2').required = true;
+        document.getElementById('passwordSection').style.display = 'block';
+
+        showModal();
+    }
+
+    // Función para editar usuario
+    function editUser(userId) {
+        const userRow = document.querySelector(`tr[data-user-id="${userId}"]`);
+        if (!userRow) return;
+
+        const cells = userRow.querySelectorAll('td');
         
-        return matchesSearch && matchesRole && matchesStatus;
-    });
-    
-    currentPage = 1;
-    loadUsers();
-}
+        // Extraer datos
+        const username = cells[0].querySelector('.text-sm.font-medium.text-gray-900').textContent.trim();
+        const fullName = cells[0].querySelector('.text-sm.text-gray-500').textContent.trim();
+        const email = cells[1].querySelector('.text-sm').textContent.trim();
+        const roleText = cells[2].querySelector('span').textContent.trim();
+        const statusText = cells[3].querySelector('span').textContent.trim();
 
-// Funciones de utilidad
-function showModal() {
-    const modal = document.getElementById('userModal');
-    const content = document.getElementById('modalContent');
-    
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        content.classList.remove('scale-95', 'opacity-0');
-        content.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
+        // Separar nombre y apellido
+        const nameParts = fullName.split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
 
-function closeModal() {
-    const modal = document.getElementById('userModal');
-    const content = document.getElementById('modalContent');
-    
-    content.classList.remove('scale-100', 'opacity-100');
-    content.classList.add('scale-95', 'opacity-0');
-    
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
-}
+        // Determinar rol
+        let role = 'user';
+        if (roleText.includes('Superusuario')) role = 'admin';
+        else if (roleText.includes('Staff')) role = 'staff';
 
-function updateStats() {
-    document.getElementById('totalUsers').textContent = users.length;
-    document.getElementById('activeUsers').textContent = users.filter(u => u.status === 'active').length;
-    document.getElementById('inactiveUsers').textContent = users.filter(u => u.status === 'inactive').length;
-    document.getElementById('adminUsers').textContent = users.filter(u => u.role === 'admin').length;
-}
+        // Determinar estado
+        const status = statusText.includes('Activo') ? 'active' : 'inactive';
 
-function updatePagination() {
-    const start = (currentPage - 1) * usersPerPage + 1;
-    const end = Math.min(currentPage * usersPerPage, filteredUsers.length);
-    
-    document.getElementById('showingStart').textContent = start;
-    document.getElementById('showingEnd').textContent = end;
-    document.getElementById('totalCount').textContent = filteredUsers.length;
-}
+        // Configurar modal
+        editingUserId = userId;
+        document.getElementById('modalTitle').textContent = 'Editar Usuario';
+        document.getElementById('submitButtonText').textContent = 'Actualizar Usuario';
+        document.getElementById('userId').value = userId;
+        document.getElementById('action').value = 'edit';
 
-function nextPage() {
-    if (currentPage * usersPerPage < filteredUsers.length) {
-        currentPage++;
-        loadUsers();
+        // Llenar formulario
+        document.getElementById('id_username').value = username;
+        document.getElementById('id_email').value = email;
+        document.getElementById('id_first_name').value = firstName;
+        document.getElementById('id_last_name').value = lastName;
+        document.getElementById('roleSelect').value = role;
+        document.getElementById('statusSelect').value = status;
+
+        // Ocultar campos de contraseña para edición
+        document.getElementById('passwordSection').style.display = 'none';
+        document.getElementById('id_password1').required = false;
+        document.getElementById('id_password2').required = false;
+
+        showModal();
     }
-}
 
-function previousPage() {
-    if (currentPage > 1) {
-        currentPage--;
-        loadUsers();
+    // Función para filtrar usuarios
+    function filterUsers() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const roleFilter = document.getElementById('roleFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+
+        const rows = document.querySelectorAll('#usersTable tr[data-user-id]');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const username = row.querySelector('.text-sm.font-medium').textContent.toLowerCase();
+            const email = row.querySelectorAll('td')[1].querySelector('.text-sm').textContent.toLowerCase();
+            const roleText = row.querySelectorAll('td')[2].querySelector('span').textContent;
+            const statusText = row.querySelectorAll('td')[3].querySelector('span').textContent;
+
+            // Determinar rol para filtro
+            let userRole = 'user';
+            if (roleText.includes('Superusuario')) userRole = 'admin';
+            else if (roleText.includes('Staff')) userRole = 'staff';
+
+            // Determinar estado para filtro
+            const userStatus = statusText.includes('Activo') ? 'active' : 'inactive';
+
+            // Aplicar filtros
+            const matchesSearch = username.includes(search) || email.includes(search);
+            const matchesRole = !roleFilter || userRole === roleFilter;
+            const matchesStatus = !statusFilter || userStatus === statusFilter;
+
+            if (matchesSearch && matchesRole && matchesStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Actualizar contador
+        document.getElementById('showingEnd').textContent = visibleCount;
+        document.getElementById('totalCount').textContent = visibleCount;
     }
-}
 
-function toggleSelectAll() {
-    const selectAll = document.getElementById('selectAll');
-    const checkboxes = document.querySelectorAll('.user-checkbox');
-    
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = selectAll.checked;
+    // Función para mostrar modal
+    function showModal() {
+        const modal = document.getElementById('userModal');
+        const content = document.getElementById('modalContent');
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    // Función para cerrar modal
+    function closeModal() {
+        const modal = document.getElementById('userModal');
+        const content = document.getElementById('modalContent');
+
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.getElementById('userForm').reset();
+            editingUserId = null;
+
+              // Eliminar mensajes de error si existen
+        const errorContainer = document.getElementById('formErrorContainer');
+        if (errorContainer) {
+            errorContainer.innerHTML = '';
+        }else{
+             errorContainer.innerHTML = '';
+        }
+        updateStats();  // Actualizar estadísticas al cerrar el modal
+        }, 300);
+    }
+
+    // Función para actualizar estadísticas
+    function updateStats() {
+        const rows = document.querySelectorAll('#usersTable tr[data-user-id]');
+        
+        let totalUsers = rows.length;
+        let activeUsers = 0;
+        let inactiveUsers = 0;
+        let adminUsers = 0;
+
+        rows.forEach(row => {
+            const statusText = row.querySelectorAll('td')[3].querySelector('span').textContent;
+            const roleText = row.querySelectorAll('td')[2].querySelector('span').textContent;
+
+            if (statusText.includes('Activo')) activeUsers++;
+            else inactiveUsers++;
+
+            if (roleText.includes('Superusuario')) adminUsers++;
+        });
+
+        document.getElementById('totalUsers').textContent = totalUsers;
+        document.getElementById('activeUsers').textContent = activeUsers;
+        document.getElementById('inactiveUsers').textContent = inactiveUsers;
+        document.getElementById('adminUsers').textContent = adminUsers;
+    }
+
+    // Función para exportar usuarios
+    function exportUsers() {
+        alert('Función de exportación en desarrollo...');
+    }
+
+    // Validación del formulario antes de enviar
+    document.getElementById('userForm').addEventListener('submit', function (e) {
+        const action = document.getElementById('action').value;
+
+        if (action === 'create') {
+            const password1 = document.getElementById('id_password1').value;
+            const password2 = document.getElementById('id_password2').value;
+
+            if (password1 !== password2) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden');
+                return false;
+            }
+
+            if (password1.length < 8) {
+                e.preventDefault();
+                alert('La contraseña debe tener al menos 8 caracteres');
+                return false;
+            }
+        }
+
+        // Validaciones adicionales
+        const username = document.getElementById('id_username').value.trim();
+        const email = document.getElementById('id_email').value.trim();
+
+        if (!username || !email) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos obligatorios');
+            return false;
+        }
+
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            alert('Por favor, ingrese un email válido');
+            return false;
+        }
+
+        return true;
     });
-}
 
-function exportUsers() {
-    // Implementar exportación a Excel/CSV
-    showNotification('Exportando usuarios...', 'info');
-}
+    // Cerrar modal con tecla ESC
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('userModal');
+            if (!modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        }
+    });
 
-function showNotification(message, type) {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full ${
-        type === 'success'
+    // Cerrar modal al hacer clic fuera de él
+    document.getElementById('userModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+</script>
+
+{% endblock %}

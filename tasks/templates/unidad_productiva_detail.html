@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ unidad_productiva.nombre }} - Unidad Productiva - Ganadek{% endblock %}
+
+{% block breadcrumb %}
+
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="flex-shrink-0">
+    <a href="/UnidadProductiva/" class="hover:text-green-600 transition-colors">Unidad Productiva</a>
+</li>
+<li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+<li class="text-emerald-600 font-medium">{{ unidad_productiva.nombre }}</li>
+{% endblock %}
+{% block content %}
+
+<!-- Header -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <div class="flex justify-between items-start">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ unidad_productiva.nombre }}</h1>
+            <div class="flex items-center space-x-4">
+                <span class="px-3 py-1 text-sm font-medium rounded-full 
+                               {% if UnidadProductiva.estado == 'disponible' %}bg-green-100 text-green-800
+                               {% elif UnidadProductiva.estado == 'ocupado' %}bg-red-100 text-red-800 
+                               {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                    {{ unidad_productiva.estado|capfirst }}
+                </span>
+                <span class="text-gray-600">Finca: {{ unidad_productiva.idfinca.nombre }}</span>
+            </div>
+            <p class="text-gray-600">Descripcion: {{ unidad_productiva.descripcion }}</p>
+        </div>
+        <div class="flex space-x-2">
+            <a href="{% url 'UnidadProductiva_edit' unidad_productiva.pk %}"
+                class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">
+                Editar Unidad Productiva
+            </a>
+
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Información Principal -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Datos Generales -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Información General</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Código</label>
+                    <p class="text-gray-900">{{ unidad_productiva.idunidad|default:"-" }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Área</label>
+                    <p class="text-gray-900">{{ unidad_productiva.area }} hectáreas</p>
+                </div>
+                {% if unidad_productiva.tipounidad == "Potrero" %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Pasto</label>
+                    <p class="text-gray-900">{{ unidad_productiva.tipopasto }}</p>
+                </div>
+                {% endif %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Capacidad</label>
+                    <p class="text-gray-900">
+                        {% if unidad_productiva.capacidad_maxima %}
+                        {{ unidad_productiva.capacidad_maxima }} animales
+                        {% else %}
+                        No definida
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Condiciones -->
+        {% if unidad_productiva.tipopasto != "Galpón" and unidad_productiva.tipopasto != "Jaula" %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Condiciones del Unidad Productiva</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% if unidad_productiva.tipounidad == "Potrero" %}
+                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Calidad del Pasto</label>
+                    <p class="text-gray-900">{{ unidad_productiva.tipopasto|default:"-" }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fuente de Agua</label>
+                    <p class="text-gray-900">{{ unidad_productiva.fuenteagua|default:"-" }}</p>
+                </div>
+                   {% endif %}
+                {% if unidad_productiva.tipounidad != "Potrero" %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sistema de Ventilación</label>
+                        <p class="text-gray-900">{{ unidad_productiva.sistemaventilacion|default:"-" }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sistema de Alimentación</label>
+                        <p class="text-gray-900">{{ unidad_productiva.sistemaalimentacion|default:"-" }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Temperatura Controlada</label>
+                        <p class="text-gray-900">
+                            {% if unidad_productiva.temperaturaControlada %}
+                                Sí
+                            {% else %}
+                                No
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Iluminación</label>
+                          <p class="text-gray-900">
+                            {% if unidad_productiva.iluminacion %}
+                                Sí
+                            {% else %}
+                                No
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        {% if unidad_productiva.tipounidad == "Potrero" %}
+                            Tipo de Cerca
+                        {% else %}
+                            Tipo de Construcción
+                        {% endif %}
+                    </label>
+                    <p class="text-gray-900">
+                            {{ unidad_productiva.tipoconstruccion|default:"-" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+
+       <!-- Animales en la Unidad Productiva -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">
+                    Animales en la Unidad Productiva ({{ total_animales|default:"0" }})
+                </h2>
+                <a href="{% url 'animal_create' %}?idunidad={{ unidad_productiva.pk }}"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                    Agregar Animal
+                </a>
+            </div>
+
+            {% if animales_en_unidad %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Número</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Raza</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sexo</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for animal in animales_en_unidad %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ animal.numero }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ animal.nombre|default:"-" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ animal.get_raza_display }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ animal.get_sexo_display }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {% if animal.fecha_nacimiento %}
+                                    {{ animal.edad }} años
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <a href="{% url 'animal_detail' animal.pk %}" class="text-blue-600 hover:text-blue-900">Ver</a>
+                                <a href="{% url 'animal_edit' animal.pk %}" class="text-yellow-600 hover:text-yellow-900">Editar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No hay animales en esta Unidad Productiva</h3>
+                <p class="text-gray-500 mb-4">Agrega el primer animal a esta Unidad Productiva</p>
+                <a href="{% url 'animal_create' %}?idunidad={{ unidad_productiva.pk }}"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                    Agregar Animal
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+
+        <!-- Historial de Actividades -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Historial de Actividades</h2>
+            {% if UnidadProductiva.actividades.exists %}
+            <div class="space-y-4">
+                {% for actividad in UnidadProductiva.actividades.all|slice:":5" %}
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-900">{{ actividad.tipo_actividad }}</p>
+                        <p class="text-sm text-gray-600">{{ actividad.descripcion }}</p>
+                        <p class="text-xs text-gray-500 mt-1">{{ actividad.fecha|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-4">No hay actividades registradas</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+<div class="space-y-6">
+    <!-- Estadísticas -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Estadísticas</h3>
+        <div class="space-y-4">
+
+            <!-- Animales actuales -->
+            <div class="flex justify-between items-center">
+                <span class="text-gray-600">Animales Actuales</span>
+                {% if unidad_productiva.tipounidad == "Potrero" %}
+                    <span class="font-semibold text-gray-900">
+                        {{ unidad_productiva.animal_set.count }}
+                    </span>
+                {% else %}
+                    <span class="font-semibold text-gray-900">
+                        {{ unidad_productiva.loteavicola_set.first.cantidad|default:"0" }}
+                    </span>
+                {% endif %}
+            </div>
+
+            <!-- Capacidad -->
+            {% if unidad_productiva.capacidad_maxima %}
+            <div class="flex justify-between items-center">
+                <span class="text-gray-600">Capacidad</span>
+                <span class="font-semibold text-gray-900">{{ unidad_productiva.capacidad_maxima }}</span>
+            </div>
+
+            <!-- Ocupación -->
+            <div class="flex justify-between items-center">
+                <span class="text-gray-600">Ocupación</span>
+                <span class="font-semibold text-gray-900">
+                    {% if unidad_productiva.tipounidad == "Potrero" %}
+                        {% if unidad_productiva.animal_set.count and unidad_productiva.capacidad_maxima %}
+                            {% widthratio unidad_productiva.animal_set.count unidad_productiva.capacidad_maxima 100 %}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    {% else %}
+                        {% with lote=unidad_productiva.loteavicola_set.first %}
+                            {% if lote.cantidad and unidad_productiva.capacidad_maxima %}
+                                {% widthratio lote.cantidad unidad_productiva.capacidad_maxima 100 %}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+
+            <!-- Área -->
+            <div class="flex justify-between items-center">
+                <span class="text-gray-600">Área</span>
+                <span class="font-semibold text-gray-900">{{ unidad_productiva.area|default:"0" }} ha</span>
+            </div>
+
+            <!-- Densidad -->
+            <div class="flex justify-between items-center">
+                <span class="text-gray-600">Densidad</span>
+                <span class="font-semibold text-gray-900">
+                    {% if unidad_productiva.area > 0 %}
+                        {% if unidad_productiva.tipounidad == "Potrero" %}
+                            {% widthratio unidad_productiva.animal_set.count unidad_productiva.area 1 %}/ha
+                        {% else %}
+                            {% with lote=unidad_productiva.loteavicola_set.first %}
+                                {% widthratio lote.cantidad|default:0 unidad_productiva.area 1 %}/ha
+                            {% endwith %}
+                        {% endif %}
+                    {% else %}
+                        0/ha
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Información Adicional -->
+        {% if unidad_productiva.observaciones %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Observaciones</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">{{ unidad_productiva.observaciones }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</div>
+
+{% endblock %}

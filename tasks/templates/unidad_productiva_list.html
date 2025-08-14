@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+
+{% block title %}Unidades Productivas - Ganadek{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Gestión de Unidades Productivas</h1>
+            <p class="text-gray-600 mt-2">Administra todas las Unidades del sistema</p>
+        </div>
+        <a href="{% url 'UnidadProductiva_create' %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Nueva Unidad Productiva
+        </a>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-blue-100 rounded-lg">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Unidades</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ total_unidades|default:0 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-green-100 rounded-lg">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Disponibles</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ unidades_disponibles|default:0 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-yellow-100 rounded-lg">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Ocupadas</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ unidades_ocupadas|default:0 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <form method="GET" class="flex flex-wrap gap-4 items-end" id="filterForm">
+            <div class="flex-1 min-w-64">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Buscar Unidad</label>
+                <input type="text" name="search" value="{{ request.GET.search }}" 
+                       placeholder="Nombre o código..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            </div>
+            <div class="min-w-48">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Finca</label>
+                <select name="finca" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <option value="">Todas las fincas</option>
+                    {% for finca in fincas %}
+                    <option value="{{ finca.pk }}" {% if request.GET.finca == finca.pk|stringformat:"s" %}selected{% endif %}>
+                        {{ finca.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="min-w-48">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                <select name="estado" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <option value="">Todos los estados</option>
+                    <option value="disponible" {% if request.GET.estado == 'disponible' %}selected{% endif %}>Disponible</option>
+                    <option value="ocupado" {% if request.GET.estado == 'ocupado' %}selected{% endif %}>Ocupado</option>
+                    <option value="descanso" {% if request.GET.estado == 'descanso' %}selected{% endif %}>En Descanso</option>
+                </select>
+            </div>
+            <div class="min-w-48">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Unidad</label>
+                <select name="tipo_unidad" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <option value="">Todos los tipos</option>
+                    <option value="potrero" {% if request.GET.tipo_unidad == 'potrero' %}selected{% endif %}>Potrero</option>
+                    <option value="corral" {% if request.GET.tipo_unidad == 'corral' %}selected{% endif %}>Corral</option>
+                    <option value="establo" {% if request.GET.tipo_unidad == 'establo' %}selected{% endif %}>Establo</option>
+                    <option value="otro" {% if request.GET.tipo_unidad == 'otro' %}selected{% endif %}>Otro</option>
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">
+                    Filtrar
+                </button>
+                <a href="?" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de Unidades -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for unidad_productiva in unidades_productivas %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">{{ unidad_productiva.nombre }}</h3>
+                    <span class="px-3 py-1 text-xs font-medium rounded-full 
+                               {% if unidad_productiva.estado == 'disponible' %}bg-green-100 text-green-800
+                               {% elif unidad_productiva.estado == 'ocupado' %}bg-blue-100 text-blue-800
+                               {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                        {% if unidad_productiva.get_estado_display %}
+                            {{ unidad_productiva.get_estado_display }}
+                        {% else %}
+                            {{ unidad_productiva.estado|default:"Sin estado" }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="space-y-3">
+                    <!-- Finca -->
+                    {% if unidad_productiva.idunidad %}
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <span class="text-sm">{{ unidad_productiva.idunidad.nombre }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Área -->
+                    {% if unidad_productiva.area %}
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                        </svg>
+                        <span class="text-sm">{{ unidad_productiva.area }} hectáreas</span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Tipo de pasto -->
+                    {% if unidad_productiva.tipopasto %}
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                        </svg>
+                        <span class="text-sm">{{ unidad_productiva.tipopasto }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Fuente de agua -->
+                    {% if unidad_productiva.fuenteagua %}
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                        <span class="text-sm">{{ unidad_productiva.fuenteagua }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Capacidad máxima -->
+                    {% if unidad_productiva.capacidad_maxima %}
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span class="text-sm">Capacidad: {{ unidad_productiva.capacidad_maxima }} animales</span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Animales actuales -->
+                    {% if unidad_productiva.animales.exists %}
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span class="text-sm">{{ unidad_productiva.animales.count }} animales actuales</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- BOTONES DE ACCIONES - MEJORADO -->
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <div class="flex space-x-2 mb-3">
+                        <!-- Botón Ver Detalles -->
+                        <a href="{% url 'UnidadProductiva_detail' unidad_productiva.pk %}" 
+                           class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <span class="font-semibold">Ver</span>
+                        </a>
+                        
+                        <!-- Botón Editar -->
+                        <a href="{% url 'UnidadProductiva_edit' unidad_productiva.pk %}" 
+                           class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-center px-3 py-2.5 rounded-lg font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            <span class="font-semibold">Editar</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Botón Eliminar -->
+                    <button onclick="confirmDelete('{{ unidad_productiva.pk }}', '{{ unidad_productiva.nombre }}')" 
+                            class="flex-1 bg-red-500 hover:bg-red-500 text-white text-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm shadow-sm hover:shadow-md border border-amber-500 hover:border-amber-600 flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        <span class="font-semibold">Eliminar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No hay Unidades Productivas registradas</h3>
+            <p class="text-gray-500 mb-4">Comienza agregando la primera Unidad Productiva al sistema</p>
+            <a href="{% url 'UnidadProductiva_create' %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
+                Agregar Unidad Productiva
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación con filtros preservados -->
+    {% if is_paginated %}
+    <div class="flex justify-center mt-8">
+        <nav class="flex space-x-2">
+            {% if page_obj.has_previous %}
+                <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.finca %}finca={{ request.GET.finca }}&{% endif %}{% if request.GET.estado %}estado={{ request.GET.estado }}&{% endif %}{% if request.GET.tipo_unidad %}tipo_unidad={{ request.GET.tipo_unidad }}&{% endif %}page=1" 
+                   class="px-3 py-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Primera</a>
+                <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.finca %}finca={{ request.GET.finca }}&{% endif %}{% if request.GET.estado %}estado={{ request.GET.estado }}&{% endif %}{% if request.GET.tipo_unidad %}tipo_unidad={{ request.GET.tipo_unidad }}&{% endif %}page={{ page_obj.previous_page_number }}" 
+                   class="px-3 py-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Anterior</a>
+            {% endif %}
+            
+            <span class="px-3 py-2 text-gray-700 bg-blue-50 border border-blue-200 rounded-lg">
+                {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.finca %}finca={{ request.GET.finca }}&{% endif %}{% if request.GET.estado %}estado={{ request.GET.estado }}&{% endif %}{% if request.GET.tipo_unidad %}tipo_unidad={{ request.GET.tipo_unidad }}&{% endif %}page={{ page_obj.next_page_number }}" 
+                   class="px-3 py-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Siguiente</a>
+                <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.finca %}finca={{ request.GET.finca }}&{% endif %}{% if request.GET.estado %}estado={{ request.GET.estado }}&{% endif %}{% if request.GET.tipo_unidad %}tipo_unidad={{ request.GET.tipo_unidad }}&{% endif %}page={{ page_obj.paginator.num_pages }}" 
+                   class="px-3 py-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Última</a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+</div>
+<!-- Modal de confirmación para eliminar -->
+<div id="deleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 sm:mx-0">
+        <div class="mt-6 flex justify-center">
+            <div class="h-12 w-12 flex items-center justify-center rounded-full bg-red-100">
+                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 
+                        1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 
+                        0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
+                    </path>
+                </svg>
+            </div>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mt-4 text-center">
+            Eliminar Unidad Productiva
+        </h3>
+        <div class="mt-2 px-6 py-3 text-center">
+            <p class="text-sm text-gray-500">
+                ¿Estás seguro de que deseas eliminar la unidad productiva 
+                "<span id="unitName"></span>"?
+                Esta acción no se puede deshacer.
+            </p>
+        </div>
+        <div class="flex justify-center space-x-3 px-6 py-4">
+
+            <form id="deleteForm" method="post" >
+                {% csrf_token %}
+                <button type="submit" class="px-4 py-2 bg-red-600 text-black text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
+                    Eliminar
+                </button>
+            </form>
+            <button onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(id, name) {
+    document.getElementById('unitName').textContent = name;
+    document.getElementById('deleteForm').action = '/UnidadProductiva/' + id + '/eliminar/';
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+</script>
+
+{% endblock %}
