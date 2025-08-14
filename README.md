@@ -16,7 +16,7 @@ Este proyecto es una aplicación web en desarrollo orientada a la gestión ganad
 - `static/`: Archivos estáticos (CSS, imágenes, iconos)
 - `frontend/`: Configuración de Tailwind CSS y dependencias frontend
 - `templates/`: Plantillas HTML
-- `db.sqlite3`: Base de datos SQLite por defecto
+- `mysql`: Base de datos Mysql 
 
 ## Instalación
 1. Clona el repositorio y entra en la carpeta del proyecto.
